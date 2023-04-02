@@ -1,118 +1,104 @@
+import { subtotal } from "./subtotal.js";
+
 export function insightTree({
   selector,
   data,
-  target = "target",
-  actual = "actual",
-  levels = [],
-  indent = "3em",
-  insights = 3,
-  focus = true,
-  template = ({
-    // indentation is based on the level
-    level,
-    // column is the name of the level field (e.g. "country")
-    column,
-    // value is the value of the level field (e.g. "UK")
-    value,
-    // rank is the number of the insight
-    rank,
-    // target & actual values
-    target,
-    actual,
-    // diff = actual - target
-    diff,
-    // percent = diff / target
-    percent,
-  }) =>
-    `<div data-level="${level}" data-rank="${rank}">${repeat(
-      indent,
-      level
-    )}#${rank} ${value} had a ${format.pc(percent)}% ${format.num(
-      diff
-    )} gap</div>`,
+  groups,
+  metrics,
+  sort,
+  rankBy,
+  render = debugRender,
 }) {
   // Calculate the tree data structure
-  const tree = generateTree(data, { ascending: true });
-  // Loop through each row in the tree and render the template
-  for (let el of document.querySelectorAll(selector))
-    el.innerHTML = tree.map(template).join("");
-  // Add event handlers to the element.
-  addEvents(el);
-
-  return ({ insight, focus }) => {};
+  const tree = subtotal({ data, groups, metrics, sort, rankBy });
+  let el = document.querySelector(selector);
+  render(el, tree, { selector, data, groups, metrics, sort, rankBy });
+  el.addEventListener("click", toggle);
+  return {
+    data: tree,
+    update: update.bind(el),
+  };
 }
 
-function generateTree(data, { ascending = true }) {
-  return [
-    {
-      level: 1,
-      column: "country",
-      value: "UK",
-      rank: 4,
-      target: 100,
-      actual: 106,
-      diff: 6,
-      percent: 6 / 100,
-    },
-    {
-      level: 2,
-      column: "product",
-      value: "Tea",
-      rank: 3,
-      target: 50,
-      actual: 60,
-      diff: 10,
-      percent: 10 / 50,
-    },
-    {
-      level: 2,
-      column: "product",
-      value: "Coffee",
-      rank: 1,
-      target: 30,
-      actual: 25,
-      diff: -5,
-      percent: -5 / 30,
-    },
-    {
-      level: 2,
-      column: "product",
-      value: "Beer",
-      rank: 2,
-      target: 20,
-      actual: 21,
-      diff: 1,
-      percent: 1 / 20,
-    },
-  ];
+function toggle(e) {
+  const node = e.target.closest("[data-insight-level]");
+  if (node == null) return;
+  const nodes = this.querySelectorAll("[data-insight-level]");
+  let i = 0;
+  for (; i < nodes.length; i++) if (nodes[i] === node) break;
+  const nodeLevel = +node.dataset.insightLevel;
+  const nodeClosed = node.classList.contains("insight-closed");
+  node.classList.toggle("insight-closed");
+  for (i++; i < nodes.length; i++) {
+    const levelDiff = +nodes[i].dataset.insightLevel - nodeLevel;
+    if (nodeClosed) {
+      // Unhide child nodes, but don't open them
+      if (levelDiff == 1) {
+        nodes[i].classList.remove("insight-hidden");
+      } else if (levelDiff <= 0) {
+        break;
+      }
+    } else {
+      // Hide and close all child nodes
+      if (levelDiff > 0) {
+        nodes[i].classList.add("insight-closed", "insight-hidden");
+      } else {
+        break;
+      }
+    }
+  }
 }
 
-function repeat(indent, level) {
-  return `<div style="display:inline-block;width:${indent}"></div>`.repeat(
-    level
-  );
+function update({ rank }) {
+  const nodes = this.querySelectorAll("[data-insight-level]");
+  const insightRank = +rank;
+  nodes.forEach((el, i) => {
+    const diff = +el.dataset.insightRank - insightRank;
+    if (diff <= 0) {
+      // Show and highlight all insights up to the rank
+      el.classList.add("insight-highlight", "insight-closed");
+      el.classList.remove("insight-hidden", "insight-current");
+      if (diff == 0) el.classList.add("insight-current");
+      // Ensure all parent nodes are open and visible
+      let nodeLevel = +nodes[i].dataset.insightLevel;
+      for (let j = i - 1; j >= 0; j--) {
+        if (+nodes[j].dataset.insightLevel < nodeLevel) {
+          nodeLevel = +nodes[j].dataset.insightLevel;
+          nodes[j].classList.remove("insight-hidden", "insight-closed");
+        }
+      }
+    } else {
+      // Un-highlight all insights below the rank
+      el.classList.remove("insight-highlight", "insight-current");
+      // Hide all insights below the rank
+      el.classList.add("insight-hidden", "insight-closed");
+    }
+  });
 }
 
-// TODO: Chandana
-// --------------------------------------
-// Define format functions copy-pasting from https://gramener.com/dynarrate/#/docs/format
-// Use pc.format and num.format to format the percent and diff respectively.
-const format = {
-  pc: (x) => x,
-  num: (x) => x,
+export const format = {
+  pc: (x) =>
+    new Intl.NumberFormat("en-US", {
+      style: "percent",
+      notation: "compact",
+      compactDisplay: "short",
+    }).format(x),
+  num: (x) =>
+    new Intl.NumberFormat("en-US", {
+      style: "decimal",
+      notation: "compact",
+      compactDisplay: "short",
+    }).format(x),
 };
 
-// Mimic the click behavior of https://gramener.com/insighttree/. Generate your own data in generateTree
-// When any node is clicked,
-//  if data-state is open or unset,
-//    note the level
-//    for all subsequent siblings where data-level = level + 1 until data-level < level
-//      hide them
-//      set data-state to close
-//  if data-state is close
-//    for all subsequent siblings where data-level = level + 1 until data-level < level
-//      show them
-//      set data-state to open
-function addEvents(el) {
-
-}
+const debugRender = (el, tree) => {
+  const html = tree.map(
+    ({ _level, _rank, _group, ...row }) => /* html */ `
+<div data-insight-level="${_level}" data-insight-rank="${_rank}"
+    style="padding-left: ${_level * 1.5}rem">
+  <span class="insight-toggle"></span>
+  <code>#${_rank} ${_group}: ${JSON.stringify(row)}</code>
+</div>`
+  );
+  el.innerHTML = html.join("");
+};

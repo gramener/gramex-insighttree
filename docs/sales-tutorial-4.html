@@ -1,0 +1,50 @@
+<meta charset="utf-8">
+<link rel="stylesheet" href="../insighttree.css">
+<style>
+  .insight-current { background-color: gold; }
+  .insight-highlight { font-weight: normal; color: red; }
+  .insight-toggle:before { content: url('arrow.svg'); }
+</style>
+<input class="slider" type="range" min="1" max="12" value="4">
+<div class="sales-tree"></div>
+
+<script type="module">
+  const response = await fetch("sales-data.json");
+  const data = await response.json();
+
+  import { insightTree } from "../index.js";
+
+  const tree = insightTree({
+    selector: ".sales-tree",
+    data: data,
+    // Group the data by city, then product, then channel
+    groups: ["city", "product", "channel"],
+    // Calculate the total of sales and target
+    metrics: ["sales", "target"],
+    // Rank insights by where the sales missed the target the most
+    rankBy: ({ sales, target }) => sales - target,
+    // Render as a table
+    render: (el, tree) => el.innerHTML = /* html */ `
+      <table>
+        <thead><tr><th>#</th><th>Group</th><th>Gap</th><th>Sales</th><th>Target</th></tr></thead>
+        <tbody>
+          ${tree.map(({ _level, _rank, _group, sales, target }) => /* html */ `
+            <tr data-insight-level="${_level}" data-insight-rank="${_rank}">
+              <td class="text-end">#${_rank}</th>
+              <td style="padding-left:${_level * 1.5}rem">
+                <span class="insight-toggle"></span> ${_group}
+              </td>
+              <td class="text-end">${sales - target}</td>
+              <td class="text-end">${sales}</td>
+              <td class="text-end">${target}</td>
+            </tr>`).join("")}
+        </tbody>
+      </table>`,
+  });
+  // Show top 4 insights
+  tree.update({ rank: 4 })
+
+  document.querySelector('.slider').addEventListener('input', (e) => {
+    tree.update({ rank: e.target.value });
+  });
+</script>

@@ -1,0 +1,47 @@
+{
+  "name": "@gramex/insighttree",
+  "version": "0.1.0",
+  "description": "The Insight Tree component breaks down a metric into a hierarchy (tree) and highlights the biggest drivers of that metric.",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild index.js --format=iife --global-name=gramex.insighttree --bundle --sourcemap --minify --outfile=insighttree.min.js",
+    "prepublish": "npm run build",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "files": [
+    "index.js",
+    "subtotal.js",
+    "insighttree.*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://code.gramener.com/cto/insighttree.git"
+  },
+  "keywords": [
+    "hierarchy",
+    "tree",
+    "insight",
+    "analysis",
+    "gramex",
+    "component"
+  ],
+  "author": "S Anand <root.node@gmail.com>",
+  "contributors": [
+    "Chandana Sagar <chandana.sagar@gramener.com>"
+  ],
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://code.gramener.com/cto/insighttree/-/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "homepage": "https://code.gramener.com/cto/insighttree/",
+  "devDependencies": {
+    "esbuild": "^0.17.12",
+    "eslint": "^8.37.0",
+    "eslint-plugin-html": "^7.1.0",
+    "jest": "^28.1.0"
+  }
+}

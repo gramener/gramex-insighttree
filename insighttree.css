@@ -1,0 +1,28 @@
+@charset "UTF-8";
+
+.insight-hidden {
+  display: none;
+}
+
+.insight-highlight {
+  font-weight: bold;
+}
+
+.insight-current {
+  background-color: #ffc107;
+}
+
+[data-insight-level] {
+  cursor: pointer;
+}
+
+.insight-toggle:before {
+  content: "▶";
+  display: inline-block;
+  transform: rotate(90deg);
+  transition: transform 0.3s ease;
+}
+
+.insight-closed .insight-toggle:before {
+  transform: rotate(0deg);
+}

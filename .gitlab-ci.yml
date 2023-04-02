@@ -1,0 +1,12 @@
+validate:
+  image: gramener/builderrors
+  script: builderrors
+
+deploy:
+  stage: deploy
+  script: deploy
+  only: [master, dev]
+  variables:
+    SERVER: gramener.com
+    URL: insighttree
+    VERSION: static

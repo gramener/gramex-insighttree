@@ -1,0 +1,16 @@
+# See https:#eslint.org/docs/user-guide/configuring
+root: true
+parserOptions:
+  ecmaVersion: latest
+  sourceType: module
+env:
+  browser: true
+  es2022: true
+  jest: true
+# Check JS inside HTML files
+plugins: [html]
+# Use eslint recommended rules by default
+extends: eslint:recommended
+# Issue a warning when JS functions are too complex
+rules:
+  complexity: [warn, { max: 15 }]

@@ -1,0 +1,33 @@
+<meta charset="utf-8">
+<link rel="stylesheet" href="../insighttree.css">
+<style>
+  .insight-current { background-color: gold; }
+  .insight-highlight { font-weight: normal; color: red; }
+  .insight-toggle:before { content: url('arrow.svg'); }
+</style>
+<input class="slider" type="range" min="1" max="12" value="4">
+<div class="sales-tree"></div>
+
+<script type="module">
+  const response = await fetch("sales-data.json");
+  const data = await response.json();
+
+  import { insightTree } from "../index.js";
+
+  const tree = insightTree({
+    selector: ".sales-tree",
+    data: data,
+    // Group the data by city, then product, then channel
+    groups: ["city", "product", "channel"],
+    // Calculate the total of sales and target
+    metrics: ["sales", "target"],
+    // Rank insights by where the sales missed the target the most
+    rankBy: ({ sales, target }) => sales - target,
+  });
+  // Show top 4 insights
+  tree.update({ rank: 4 })
+
+  document.querySelector('.slider').addEventListener('input', (e) => {
+    tree.update({ rank: e.target.value });
+  });
+</script>
