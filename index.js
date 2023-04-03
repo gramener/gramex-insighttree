@@ -11,8 +11,13 @@ export function insightTree({
 }) {
   // Calculate the tree data structure
   const tree = subtotal({ data, groups, metrics, sort, rankBy });
+  // Render the tree
   let el = document.querySelector(selector);
   render(el, tree, { selector, data, groups, metrics, sort, rankBy });
+  // Mark leaf nodes
+  for (const leaf of el.querySelectorAll(`[data-insight-level="${groups.length}"]`))
+    leaf.classList.add("insight-leaf");
+  // Listen to clicks and expand/collapse nodes
   el.addEventListener("click", toggle);
   return {
     data: tree,

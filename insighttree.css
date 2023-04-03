@@ -26,3 +26,7 @@
 .insight-closed .insight-toggle:before {
   transform: rotate(0deg);
 }
+
+.insight-leaf .insight-toggle {
+  visibility: hidden;
+}
