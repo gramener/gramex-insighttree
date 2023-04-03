@@ -93,11 +93,11 @@ function flatten(tree, sorts) {
 }
 
 const agg = {
-  sum: (key, v) => v.reduce((a, b) => a + b[key], 0),
+  sum: (key, v) => v.reduce((a, b) => +a + b[key], 0),
   count: (key, v) => v.length,
-  avg: (key, v) => v.reduce((a, b) => a + b[key], 0) / v.length,
-  min: (key, v) => Math.min(...v.map((d) => d[key])),
-  max: (key, v) => Math.max(...v.map((d) => d[key])),
+  avg: (key, v) => v.reduce((a, b) => +a + b[key], 0) / v.length,
+  min: (key, v) => Math.min(...v.map((d) => +d[key])),
+  max: (key, v) => Math.max(...v.map((d) => +d[key])),
 };
 
 const sorters = {
