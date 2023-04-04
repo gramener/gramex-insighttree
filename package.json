@@ -15,7 +15,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://code.gramener.com/cto/insighttree.git"
+    "url": "https://code.gramener.com/cto/insighttree/"
   },
   "keywords": [
     "hierarchy",
@@ -37,11 +37,12 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "homepage": "https://code.gramener.com/cto/insighttree/",
+  "homepage": "https://gramener.com/insighttree/",
   "devDependencies": {
     "esbuild": "^0.17.12",
     "eslint": "^8.37.0",
     "eslint-plugin-html": "^7.1.0",
-    "jest": "^28.1.0"
+    "jest": "^28.1.0",
+    "jest-environment-jsdom": "^29.5.0"
   }
 }

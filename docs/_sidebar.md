@@ -1,6 +1,7 @@
 <!-- markdownlint-disable first-line-heading -->
 
 - [Introduction](README.md)
+- [Setup](setup.md)
 - [Tutorial](tutorial.md)
   - [Create an insight tree from data](tutorial.md#create-an-insight-tree-from-data)
   - [Add a slider to control insights](tutorial.md#add-a-slider-to-control-insights)

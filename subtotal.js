@@ -1,4 +1,11 @@
-export function subtotal({ data, groups, metrics, sort, rankBy = undefined, total = "Total" }) {
+export function subtotal({
+  data,
+  groups,
+  metrics,
+  sort,
+  rankBy = undefined,
+  totalGroup = "Total",
+}) {
   if (typeof groups != "object" || groups === null)
     throw new Error(`groups must be ['col', ...] or {col: row => ...}, not ${groups}`);
   // Convert array of strings [x, y, z] into object {x: x, y: y, z: z}
@@ -33,9 +40,10 @@ export function subtotal({ data, groups, metrics, sort, rankBy = undefined, tota
     )
     .map((order) => (order ? (a, b) => order(a.metrics, b.metrics) : order));
 
-  if (typeof rankBy !== "function" && typeof rankBy !== "string")
-    throw new Error("rankBy must be a function or string");
-  rankBy = typeof rankBy === "function" ? rankBy : (d) => d[rankBy];
+  if (rankBy === undefined) rankBy = () => 0;
+  else if (typeof rankBy == "string") rankBy = (d) => d[rankBy];
+  else if (typeof rankBy !== "function")
+    throw new Error(`rankBy must be a function or string, not ${rankBy}`);
 
   // Return { metric: fn(data) } for based on each metric's function
   function reduce(data, context) {
@@ -44,7 +52,7 @@ export function subtotal({ data, groups, metrics, sort, rankBy = undefined, tota
     return result;
   }
 
-  const tree = nest(data, groupNames, groupValues, reduce, { _group: total });
+  const tree = nest(data, groupNames, groupValues, reduce, { _group: totalGroup });
   const result = flatten(tree, sorts);
   result
     .map((v) => [rankBy(v), v])
@@ -92,10 +100,10 @@ function flatten(tree, sorts) {
   return result;
 }
 
-const agg = {
-  sum: (key, v) => v.reduce((a, b) => +a + b[key], 0),
+export const agg = {
+  sum: (key, v) => v.reduce((a, v) => +v[key] + a, 0),
   count: (key, v) => v.length,
-  avg: (key, v) => v.reduce((a, b) => +a + b[key], 0) / v.length,
+  avg: (key, v) => v.reduce((a, v) => +v[key] + a, 0) / v.length,
   min: (key, v) => Math.min(...v.map((d) => +d[key])),
   max: (key, v) => Math.max(...v.map((d) => +d[key])),
 };

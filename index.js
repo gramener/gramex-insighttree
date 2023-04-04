@@ -8,11 +8,13 @@ export function insightTree({
   sort,
   rankBy,
   render = debugRender,
+  totalGroup,
 }) {
   // Calculate the tree data structure
-  const tree = subtotal({ data, groups, metrics, sort, rankBy });
+  const tree = subtotal({ data, groups, metrics, sort, rankBy, totalGroup });
   // Render the tree
   let el = document.querySelector(selector);
+  if (!el) throw new Error(`selector ${selector} missing`);
   render(el, tree, { selector, data, groups, metrics, sort, rankBy });
   // Mark leaf nodes
   for (const leaf of el.querySelectorAll(`[data-insight-level="${groups.length}"]`))

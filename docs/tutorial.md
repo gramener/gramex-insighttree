@@ -95,6 +95,8 @@ A row always has these attributes:
 - `[data-insight-level]`: level of indentation. Default style: `cursor: pointer`
 - `[data-insight-rank]`: rank of the insight. `1` is the highest ranked insight. No default style.
 
+Note: You can rename the "Total" group to "All" by passing `insightTree({ ..., totalGroup: "All" })`.
+
 Download [arrow.svg](arrow.svg ":ignore") to the same folder and add this below `<link rel="stylesheet" ...>`:
 
 ```html
