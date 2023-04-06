@@ -1,6 +1,6 @@
 {
   "name": "@gramex/insighttree",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "The Insight Tree component breaks down a metric into a hierarchy (tree) and highlights the biggest drivers of that metric.",
   "type": "module",
   "scripts": {
