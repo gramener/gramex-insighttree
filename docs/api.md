@@ -35,7 +35,9 @@
   - `options`: the options passed to `insightTree()`: `selection`, `data`, `groups`, `metrics`, `rankBy`
 - `totalGroup`: name of the total row's `_group`. Defaults to `"Total"`
 
-It returns a `tree` object has an `update()` that can update the tree.
+It returns a `tree` object has the following methods:
+
+- `update({ rank })` updates the tree to expand / collapse to a specified rank.
 
 ```js
 // Show 5 insights
