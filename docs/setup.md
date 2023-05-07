@@ -12,7 +12,9 @@ Then include the script in your HTML:
 <link rel="stylesheet" href="node_modules/@gramex/insighttree/insighttree.css" />
 
 <script src="node_modules/@gramex/insighttree/insighttree.min.js"></script>
-<script>gramex.insighttree.insightTree({ selector: ".tree", data: data });</script>
+<script>
+  gramex.insighttree.insightTree({ selector: ".tree", data: data });
+</script>
 <!-- or with ES Modules -->
 <script type="module">
   import { insightTree } from "node_modules/@gramex/insighttree/index.js";
@@ -37,5 +39,7 @@ Use via [jsDelivr CDN](https://www.jsdelivr.com/) as classic browser script:
 <link rel="stylesheet" href="http://cdn.jsdelivr.net/npm/@gramex/insighttree@1/insighttree.css" />
 
 <script src="http://cdn.jsdelivr.net/npm/@gramex/insighttree@1/insighttree.min.js"></script>
-<script>gramex.insighttree.insightTree({ selector: ".tree", data: data });</script>
+<script>
+  gramex.insighttree.insightTree({ selector: ".tree", data: data });
+</script>
 ```
