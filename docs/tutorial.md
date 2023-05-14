@@ -19,7 +19,7 @@ Inside the `<script type="module">`, load [sales-data.csv](sales-data.csv ":igno
 ```js
 import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
 const response = await fetch("sales-data.csv");
-const data = csvParse(await response.text())
+const data = csvParse(await response.text());
 ```
 
 Let's find where the `sales` was below `target` -- drilling down by `city`, `product`, and `channel`:

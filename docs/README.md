@@ -7,12 +7,12 @@ It needs an array of objects with at least 1 grouping variable (e.g. `country`, 
 [sales-data.csv](../app/sales-data.csv ":ignore")
 
 | city | product | channel | sales | target | gap |
-|------|---------|---------|------:|-------:|----:|
-| Aden | Clock   | Online  | 61    | 76     | -15 |
-| Aden | Clock   | Retail  | 66    | 83     | -17 |
-| Aden | Drone   | Online  | 33    | 52     | -19 |
-| Aden | Drone   | Retail  | 105   | 90     | 15  |
-| ...  | ...     | ...     | ...   | ...    | ... |
+| ---- | ------- | ------- | ----: | -----: | --: |
+| Aden | Clock   | Online  |    61 |     76 | -15 |
+| Aden | Clock   | Retail  |    66 |     83 | -17 |
+| Aden | Drone   | Online  |    33 |     52 | -19 |
+| Aden | Drone   | Retail  |   105 |     90 |  15 |
+| ...  | ...     | ...     |   ... |    ... | ... |
 
 To generate this output:
 
