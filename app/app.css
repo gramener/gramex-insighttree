@@ -1,0 +1,15 @@
+.font-small-caps {
+  font-variant: small-caps;
+}
+
+.bg-gramener {
+  background-color: #20186f;
+}
+
+.icon-zoom {
+  max-height: 400px;
+}
+
+footer {
+  min-height: 400px;
+}
