@@ -2,7 +2,7 @@
 
 ## Create an insight tree from data
 
-Download [sales-data.json](sales-data.json ":ignore").
+Download [sales-data.csv](../app/sales-data.csv ":ignore").
 
 Create an `index.html` with an empty `<div>` element:
 
@@ -14,11 +14,12 @@ Create an `index.html` with an empty `<div>` element:
 <script type="module"></script>
 ```
 
-Inside the `<script type="module">`, load [sales-data.json](sales-data.json ":ignore").:
+Inside the `<script type="module">`, load [sales-data.csv](sales-data.csv ":ignore").:
 
 ```js
-const response = await fetch("sales-data.json");
-const data = await response.json();
+import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
+const response = await fetch("sales-data.csv");
+const data = csvParse(await response.text())
 ```
 
 Let's find where the `sales` was below `target` -- drilling down by `city`, `product`, and `channel`:

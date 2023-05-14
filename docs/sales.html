@@ -6,12 +6,13 @@
 
 <script type="module" class="script-source">
   import { insightTree, format } from "../index.js";
+  import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
   import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
 
   const color = scaleLinear().domain([-0.5, 0, 0.2]).range(["red", "yellow", "lime"]);
 
-  const response = await fetch("sales-data.json");
-  const data = await response.json();
+  const response = await fetch("../app/sales-data.csv");
+  const data = csvParse(await response.text());
   const tree = insightTree({
     selector: ".sales-tree",
     data: data,

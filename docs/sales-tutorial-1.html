@@ -3,8 +3,9 @@
 <div class="sales-tree"></div>
 
 <script type="module">
-  const response = await fetch("sales-data.json");
-  const data = await response.json();
+  import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
+  const response = await fetch("../app/sales-data.csv");
+  const data = csvParse(await response.text())
 
   import { insightTree } from "../index.js";
 

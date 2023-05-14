@@ -10,4 +10,4 @@ Move the slider to see the biggest drivers of the `Gap` between `Sales` and `Tar
 
 ## Data
 
-[Sales Data](sales-data.json ":include :type=code")
+[Sales Data](../app/sales-data.csv ":include :type=code")

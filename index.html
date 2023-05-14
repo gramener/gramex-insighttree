@@ -98,6 +98,7 @@
 
     <script type="module">
       import { insightTree, format } from "./index.js";
+      import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
       import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
 
       function createColorScale(domain, range) {
@@ -106,8 +107,8 @@
 
       const rgb = createColorScale([-0.5, 0, 0.2], ["red", "yellow", "lime"]);
 
-      const response = await fetch("docs/sales-data.json");
-      const data = await response.json();
+      const response = await fetch("app/sales-data.csv");
+      const data = csvParse(await response.text());
       const tree = insightTree({
         selector: ".sales-tree",
         data: data,
@@ -143,8 +144,8 @@
         tree.update({ rank: e.target.value });
       });
 
-      const hiring_data_response = await fetch("docs/hiring.json");
-      const hiring_data = await hiring_data_response.json();
+      const hiring_data_response = await fetch("app/hiring.csv");
+      const hiring_data = csvParse(await hiring_data_response.text());
       const hiring_tree = insightTree({
         selector: ".hiring-tree",
         data: hiring_data,
