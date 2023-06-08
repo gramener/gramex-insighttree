@@ -1,5 +1,5 @@
 /* globals TomSelect */
-import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
+import { dsvFormat } from "https://cdn.skypack.dev/d3-dsv@3";
 import { insightTree, format } from "../index.js";
 
 const $data = document.querySelector("#data");
@@ -45,15 +45,18 @@ $data.addEventListener("change", (event) => {
   document.querySelector("#insight-tree-container").classList.toggle("d-none", !value);
 });
 
-const groupsSelect = new TomSelect("#groups", {});
-const metricsSelect = new TomSelect("#metrics", {});
-const rankbySelect = new TomSelect("#rankby", {});
-const sortbySelect = new TomSelect("#sortby", {});
+const groupsSelect = new TomSelect("#groups", { selectOnTab: true  });
+const metricsSelect = new TomSelect("#metrics", { selectOnTab: true  });
+const rankbySelect = new TomSelect("#rankby", { selectOnTab: true  });
+const sortbySelect = new TomSelect("#sortby", { selectOnTab: true  });
 let tree, data;
 
 // When #data value changes, parse the data
 $data.addEventListener("change", (event) => {
-  data = csvParse(event.target.value);
+  // If the first line contains a tab, assume it's a TSV. Otherwise, assume it's a CSV.
+  const firstLine = event.target.value.split("\n")[0];
+  const format = dsvFormat(firstLine.includes("\t") ? "\t" : ",");
+  data = format.parse(event.target.value);
 
   // Identify groups (non-numeric columns) and metrics (numeric columns) from the first 100 rows
   data.groups = [];
