@@ -45,10 +45,10 @@ $data.addEventListener("change", (event) => {
   document.querySelector("#insight-tree-container").classList.toggle("d-none", !value);
 });
 
-const groupsSelect = new TomSelect("#groups", { selectOnTab: true  });
-const metricsSelect = new TomSelect("#metrics", { selectOnTab: true  });
-const rankbySelect = new TomSelect("#rankby", { selectOnTab: true  });
-const sortbySelect = new TomSelect("#sortby", { selectOnTab: true  });
+const groupsSelect = new TomSelect("#groups", { selectOnTab: true });
+const metricsSelect = new TomSelect("#metrics", { selectOnTab: true });
+const rankbySelect = new TomSelect("#rankby", { selectOnTab: true });
+const sortbySelect = new TomSelect("#sortby", { selectOnTab: true });
 let tree, data;
 
 // When #data value changes, parse the data
