@@ -1,5 +1,7 @@
 /* globals TomSelect */
 import { dsvFormat } from "https://cdn.skypack.dev/d3-dsv@3";
+import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
+import { hcl } from "https://cdn.skypack.dev/d3-color@3";
 import { insightTree, format } from "../index.js";
 
 const $data = document.querySelector("#data");
@@ -94,9 +96,10 @@ document.querySelector("#insight-tree-controls").addEventListener("change", () =
     data: data,
     groups: groupsSelect.getValue(),
     metrics: metricsSelect.getValue(),
-    rankBy: rankByDescending ? (row) => -row[rankBy] : (row) => row[rankBy],
+    rankBy: rankByDescending ? `-${rankBy}` : rankBy,
     sort: `${sortByDescending ? "-" : "+"}${sortBy}`,
     render: insightTreeRender,
+    extra: [rankBy, rankByDescending],
   });
   // Show only top 4 insights
   tree.update({ rank: +$slider.value });
@@ -108,6 +111,15 @@ $slider.addEventListener("input", (e) => {
 
 const insightTreeRender = (el, tree, { metrics }) => {
   const rankBy = rankbySelect.getValue();
+  const rankByDescending = document.querySelector("#rankby-descending").checked;
+  const rankByValues = tree.map((d) => d[rankBy]).sort();
+  const color = scaleLinear()
+    .domain([
+      Math.min(...rankByValues),
+      rankByValues[Math.floor(rankByValues.length / 2)],
+      Math.max(...rankByValues),
+    ])
+    .range(rankByDescending ? ["green", "yellow", "red"] : ["red", "yellow", "green"]);
   el.innerHTML = /* html */ `
   <table class="table table-sm w-auto">
     <thead>
@@ -133,7 +145,16 @@ const insightTreeRender = (el, tree, { metrics }) => {
             <span class="insight-toggle"></span> ${_group}
           </td>
           ${metrics
-            .map((metric) => /* html */ `<td class="text-end">${format.num(rest[metric])}</td>`)
+            .map((metric) => {
+              const val = rest[metric];
+              let style = "";
+              if (metric == rankBy) {
+                const bg = color(val);
+                const fg = hcl(bg).l > 55 ? "black" : "white";
+                style = `style="background-color:${bg};color:${fg}"`;
+              }
+              return /* html */ `<td class="text-end" ${style}>${format.num(val)}</td>`;
+            })
             .join("")}
         </tr>`
         )

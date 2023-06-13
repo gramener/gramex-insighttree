@@ -1,19 +1,15 @@
 @charset "UTF-8";
 
-.insight-hidden {
-  display: none;
+.insight-current {
+  background-color: #ffc107;
 }
 
 .insight-highlight {
   font-weight: bold;
 }
 
-.insight-current {
-  background-color: #ffc107;
-}
-
-[data-insight-level] {
-  cursor: pointer;
+.insight-hidden {
+  display: none;
 }
 
 .insight-toggle:before {
@@ -29,4 +25,8 @@
 
 .insight-leaf .insight-toggle {
   visibility: hidden;
+}
+
+[data-insight-level] {
+  cursor: pointer;
 }
