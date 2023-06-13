@@ -18,10 +18,10 @@
     - `{"First date recorded": (rows) => rows[0].date`
     - `{"Earliest date": (rows) => Math.min(...rows.map(({date}) => date))`
 - `rankBy`: optional metric to rank insights by. The tree is sorted by this metric. The first entry has rank 1, the second has rank 2, and so on. This can be:
-  - an existing column name, e.g. `"gap"`. The lowest gap will be highlighted first
+  - an existing column name, e.g. `"x"`. Use `"+x"` to sort ascending (default) and `"-x"` to sort descending. (+/- works only for numbers)
   - a function, e.g. `({ sales, target }) => sales - target`. The lowest `sales - target` (i.e. sales achievement) will be highlighted first
 - `sort`: optional ways of sorting each level, e.g. `"+x"`. This can be:
-  - an existing column name, e.g. `"x"`. Use `"+x"` to sort ascending (default) and `"-x"` to sort descending.
+  - an existing column name, e.g. `"x"`. Use `"+x"` to sort ascending (default) and `"-x"` to sort descending. (+/- works only for numbers)
   - an object of existing column names and sorting columns, e.g. `{"a": "+x", "b": "-y"}`.
   - an object of existing column names and sorting functions, e.g. `{"a": (a, b) => a.x < b.x ? +1 : -1}`
 - `render`: a function renders the tree. The function is called with:

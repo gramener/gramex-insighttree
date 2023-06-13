@@ -170,9 +170,23 @@ describe("subtotal", () => {
   });
   test("rankBy can be column names", () => {
     expect(subtotal({ data, groups: ["a"], metrics: ["x"], rankBy: "x" })).toEqual([
+      { _group: "Total", _level: 0, _rank: 3, x: 51 },
+      { _group: "a1", _level: 1, _rank: 1, a: "a1", x: 12 },
+      { _group: "a2", _level: 1, _rank: 2, a: "a2", x: 39 },
+    ]);
+  });
+  test("rankBy can be +column names", () => {
+    expect(subtotal({ data, groups: ["a"], metrics: ["x"], rankBy: "+x" })).toEqual([
+      { _group: "Total", _level: 0, _rank: 3, x: 51 },
+      { _group: "a1", _level: 1, _rank: 1, a: "a1", x: 12 },
+      { _group: "a2", _level: 1, _rank: 2, a: "a2", x: 39 },
+    ]);
+  });
+  test("rankBy can be -column names", () => {
+    expect(subtotal({ data, groups: ["a"], metrics: ["x"], rankBy: "-x" })).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 51 },
-      { _group: "a1", _level: 1, _rank: 2, a: "a1", x: 12 },
-      { _group: "a2", _level: 1, _rank: 3, a: "a2", x: 39 },
+      { _group: "a1", _level: 1, _rank: 3, a: "a1", x: 12 },
+      { _group: "a2", _level: 1, _rank: 2, a: "a2", x: 39 },
     ]);
   });
   test("rankBy can be fn that gets all columns", () => {

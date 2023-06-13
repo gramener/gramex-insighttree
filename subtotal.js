@@ -27,6 +27,8 @@ export function subtotal({
 
   if ((typeof sort != "object" && typeof sort != "string" && sort !== undefined) || sort === null)
     throw new Error("sort must be '+col', '-col', or {col1: '-col2', ...}");
+
+  // Convert sorts values into a function that sorts the data by the given column
   const sorts = groupNames
     .map((col) => (typeof sort === "string" || sort === undefined ? sort : sort[col]))
     .map((order) =>
@@ -40,10 +42,21 @@ export function subtotal({
     )
     .map((order) => (order ? (a, b) => order(a.metrics, b.metrics) : order));
 
+  // Convert rankBy to a function that returns a number that's sortable
   if (rankBy === undefined) rankBy = () => 0;
-  else if (typeof rankBy == "string") rankBy = (d) => d[rankBy];
-  else if (typeof rankBy !== "function")
-    throw new Error(`rankBy must be a function or string, not ${rankBy}`);
+  else if (typeof rankBy == "string") {
+    if (rankBy[0] == "-") {
+      const rankByCol = rankBy.slice(1);
+      rankBy = (d) => -d[rankByCol];
+    } else if (rankBy[0] == "+") {
+      const rankByCol = rankBy.slice(1);
+      rankBy = (d) => d[rankByCol];
+    } else {
+      const rankByCol = rankBy;
+      rankBy = (d) => d[rankByCol];
+    }
+  } else if (typeof rankBy !== "function")
+    throw new Error(`rankBy must be a function, +column, -column, not ${rankBy}`);
 
   // Return { metric: fn(data) } for based on each metric's function
   function reduce(data, context) {
