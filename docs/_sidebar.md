@@ -12,3 +12,4 @@
 - [API](api.md)
 - Examples
   - [Sales](sales.md)
+- [Release notes](release.md)
