@@ -142,7 +142,6 @@ Download [arrow.svg](arrow.svg ":ignore") to the same folder and add this below 
 
 [Source code](sales-tutorial-3.html ":include :type=code")
 
-
 ## Render custom trees
 
 [`insightTree()`](api.md) accepts a `render(el, tree)` function. This can be used to render the tree in any way.
@@ -245,7 +244,6 @@ Also replace:
 [![Tutorial - 5](sales-tutorial-5.png)](sales-tutorial-5.html ":include :type=html height=350px")
 
 [Source code](sales-tutorial-5.html ":include :type=code")
-
 
 ## Custom aggregation
 
