@@ -4,7 +4,10 @@
   "description": "The Insight Tree component breaks down a metric into a hierarchy (tree) and highlights the biggest drivers of that metric.",
   "type": "module",
   "scripts": {
-    "build": "esbuild index.js --format=iife --global-name=gramex.insighttree --bundle --sourcemap --minify --outfile=insighttree.min.js",
+    "watch": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js --watch",
+    "build-browser": "esbuild index.js --format=iife --global-name=gramex --bundle --sourcemap --minify --outfile=insighttree.min.js",
+    "build-esm": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js",
+    "build": "npm run build-browser && npm run build-esm",
     "prepublish": "npm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
@@ -15,7 +18,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://code.gramener.com/cto/insighttree/"
+    "url": "https://code.gramener.com/cto/insighttree"
   },
   "keywords": [
     "hierarchy",
@@ -38,6 +41,9 @@
     "registry": "https://registry.npmjs.org/"
   },
   "homepage": "https://gramener.com/insighttree/",
+  "prettier": {
+    "printWidth": 100
+  },
   "devDependencies": {
     "esbuild": "^0.17.12",
     "eslint": "^8.37.0",

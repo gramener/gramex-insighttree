@@ -6,8 +6,7 @@ import { data } from "./subtotal.test.js";
 
 describe("insightTree", () => {
   test("render() gets an element and tree array with all fields", () => {
-    insightTree({
-      selector: "body",
+    insightTree("body", {
       data,
       groups: ["a", "b"],
       metrics: ["x", "y"],
@@ -27,8 +26,7 @@ describe("insightTree", () => {
     });
   });
   test("render() renders a default debug tree", () => {
-    insightTree({
-      selector: "body",
+    insightTree("body", {
       data,
       groups: ["a", "b"],
       metrics: ["x", "y"],

@@ -1,15 +1,9 @@
 import { subtotal } from "./subtotal.js";
 
-export function insightTree({
+export function insightTree(
   selector,
-  data,
-  groups,
-  metrics,
-  sort,
-  rankBy,
-  render = debugRender,
-  totalGroup,
-}) {
+  { data, groups, metrics, sort, rankBy, render = debugRender, totalGroup }
+) {
   // Calculate the tree data structure
   const tree = subtotal({ data, groups, metrics, sort, rankBy, totalGroup });
   // Render the tree
@@ -20,83 +14,52 @@ export function insightTree({
   for (const leaf of el.querySelectorAll(`[data-insight-level="${groups.length}"]`))
     leaf.classList.add("insight-leaf");
   // Listen to clicks and expand/collapse nodes
-  el.addEventListener("click", toggle);
+  el.addEventListener("click", toggle.bind(el, tree));
   return {
     data: tree,
-    update: update.bind(el),
+    update: update.bind(el, tree),
   };
 }
 
-function toggle(e) {
+function toggle(tree, e) {
+  // Find the node that was clicked
   const node = e.target.closest("[data-insight-level]");
   if (node == null) return;
+  // Find the index of the node in the list of nodes
   const nodes = this.querySelectorAll("[data-insight-level]");
   let i = 0;
   for (; i < nodes.length; i++) if (nodes[i] === node) break;
+  // Toggle the node
   const nodeLevel = +node.dataset.insightLevel;
   const nodeClosed = node.classList.contains("insight-closed");
   node.classList.toggle("insight-closed");
-  for (i++; i < nodes.length; i++) {
-    const levelDiff = +nodes[i].dataset.insightLevel - nodeLevel;
-    if (nodeClosed) {
-      // Unhide child nodes, but don't open them
-      if (levelDiff == 1) {
-        nodes[i].classList.remove("insight-hidden");
-      } else if (levelDiff <= 0) {
-        break;
-      }
-    } else {
-      // Hide and close all child nodes
-      if (levelDiff > 0) {
-        nodes[i].classList.add("insight-closed", "insight-hidden");
-      } else {
-        break;
-      }
-    }
+  // Toggle all child nodes
+  for (let j = i + 1; j < tree.length && tree[j]._level > nodeLevel; j++) {
+    nodes[j].classList.toggle("insight-hidden", nodeClosed ? tree[j]._level > nodeLevel + 1 : true);
+    nodes[j].classList.toggle("insight-closed", true);
   }
 }
 
-function update({ rank }) {
+function update(tree, { rank, level }) {
   const nodes = this.querySelectorAll("[data-insight-level]");
-  const insightRank = +rank;
+  rank = +rank;
+  level = +level;
   nodes.forEach((el, i) => {
-    const diff = +el.dataset.insightRank - insightRank;
-    if (diff <= 0) {
-      // Show and highlight all insights up to the rank
-      el.classList.add("insight-highlight", "insight-closed");
-      el.classList.remove("insight-hidden", "insight-current");
-      if (diff == 0) el.classList.add("insight-current");
-      // Ensure all parent nodes are open and visible
-      let nodeLevel = +nodes[i].dataset.insightLevel;
-      for (let j = i - 1; j >= 0; j--) {
-        if (+nodes[j].dataset.insightLevel < nodeLevel) {
-          nodeLevel = +nodes[j].dataset.insightLevel;
-          nodes[j].classList.remove("insight-hidden", "insight-closed");
-        }
+    const nodeRank = +el.dataset.insightRank;
+    const nodeLevel = +el.dataset.insightLevel;
+    el.classList.toggle("insight-current", nodeRank == rank);
+    el.classList.toggle("insight-highlight", nodeRank <= rank);
+    let hasOpenChild = false;
+    for (let j = i + 1; j < tree.length && tree[j]._level > nodeLevel; j++)
+      if (tree[j]._rank <= rank) {
+        hasOpenChild = true;
+        break;
       }
-    } else {
-      // Un-highlight all insights below the rank
-      el.classList.remove("insight-highlight", "insight-current");
-      // Hide all insights below the rank
-      el.classList.add("insight-hidden", "insight-closed");
-    }
+    const show = nodeRank <= rank || nodeLevel <= level || hasOpenChild;
+    el.classList.toggle("insight-hidden", !show);
+    el.classList.toggle("insight-closed", !hasOpenChild);
   });
 }
-
-export const format = {
-  pc: (x) =>
-    new Intl.NumberFormat("en-US", {
-      style: "percent",
-      notation: "compact",
-      compactDisplay: "short",
-    }).format(x),
-  num: (x) =>
-    new Intl.NumberFormat("en-US", {
-      style: "decimal",
-      notation: "compact",
-      compactDisplay: "short",
-    }).format(x),
-};
 
 const debugRender = (el, tree) => {
   const html = tree.map(
