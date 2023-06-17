@@ -398,12 +398,28 @@ It returns a `tree` object has the following methods:
 
 # Release notes
 
+## 2.0.0
+
+17 Jun 2023
+
+- `insightTree().update({ level: n })` expands the tree to level n
+- `import "insighttree.js"` provides a bundled ESM script
+
+Backward-incompatible changes from 1.x:
+
+- Call `gramex.insightTree()`, not `gramex.insighttree.insightTree()`
+- Pass `insightTree(selector, options)`, not `insightTree({ selector, ...options })`
+- insighttree does not export a `format` object. Use `Intl.NumberFormat` instead
+
 ## 1.1.0
+
+13 Jun 2023
 
 - `rankBy` supports column names with `+` and `-` prefixes.
   E.g. `{ rankBy: "-fees" }` highlights the highest fees first, then the next highest, and so on.
 
 ## 1.0.0
 
-- Date: 6 Apr 2023
+6 Apr 2023
+
 - Initial release
