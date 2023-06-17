@@ -1,4 +1,3 @@
-<meta charset="utf-8">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" />
 <link rel="stylesheet" href="../insighttree.css">
 <style>
@@ -10,25 +9,17 @@
 <div class="sales-tree"></div>
 
 <script type="module">
+  import { insightTree } from "../index.js";
+  const data = await fetch("sales-data.json").then(r => r.json())
+
   import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
   const color = scaleLinear().domain([0.5, 1, 1.2]).range(["red", "yellow", "lime"]);
 
-  import { csvParse } from "https://cdn.skypack.dev/d3-dsv@3";
-  const response = await fetch("../app/sales-data.csv");
-  const data = csvParse(await response.text())
-
-  import { insightTree } from "../index.js";
-
-  const tree = insightTree({
-    selector: ".sales-tree",
+  const tree = insightTree(".sales-tree", {
     data: data,
-    // Group the data by city, then product, then channel
     groups: ["city", "product", "channel"],
-    // Calculate the total of sales and target
     metrics: ["sales", "target"],
-    // Rank insights by where the sales missed the target the most
     rankBy: ({ sales, target }) => sales - target,
-    // Render as a table
     render: (el, tree) => el.innerHTML = /* html */ `
       <table class="table w-auto">
         <thead><tr><th>#</th><th>Group</th><th>Gap</th><th>Sales</th><th>Target</th></tr></thead>

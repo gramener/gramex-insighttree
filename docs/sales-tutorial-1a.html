@@ -1,10 +1,5 @@
 <link rel="stylesheet" href="../insighttree.css" />
-<style>
-  .insight-current { background-color: gold; }
-  .insight-highlight { font-weight: normal; color: red; }
-  .insight-toggle:before { content: url("arrow.svg"); }
-</style>
-<input class="slider" type="range" min="1" max="12" value="4" />
+<input id="level" type="range" min="0" max="3" value="1" />
 <div class="sales-tree"></div>
 
 <script type="module">
@@ -17,10 +12,10 @@
     metrics: ["sales", "target"],
     rankBy: ({ sales, target }) => sales - target,
   });
-  // Show top 4 insights
-  tree.update({ rank: 4 });
+  // Expand to level 1
+  tree.update({ level: 1 });
 
-  document.querySelector(".slider").addEventListener("input", (e) => {
-    tree.update({ rank: e.target.value });
+  document.querySelector("#level").addEventListener("input", (e) => {
+    tree.update({ level: e.target.value });
   });
 </script>

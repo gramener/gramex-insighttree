@@ -2,7 +2,8 @@
 import { dsvFormat } from "https://cdn.skypack.dev/d3-dsv@3";
 import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
 import { hcl } from "https://cdn.skypack.dev/d3-color@3";
-import { insightTree, format } from "../index.js";
+import { insightTree } from "../index.js";
+import { num } from "./format.js";
 
 const $data = document.querySelector("#data");
 const $slider = document.querySelector("#slider");
@@ -91,8 +92,7 @@ document.querySelector("#insight-tree-controls").addEventListener("change", () =
   const sortBy = sortbySelect.getValue();
   const rankByDescending = document.querySelector("#rankby-descending").checked;
   const sortByDescending = document.querySelector("#sortby-descending").checked;
-  tree = insightTree({
-    selector: ".insight-tree",
+  tree = insightTree(".insight-tree", {
     data: data,
     groups: groupsSelect.getValue(),
     metrics: metricsSelect.getValue(),
@@ -153,7 +153,7 @@ const insightTreeRender = (el, tree, { metrics }) => {
                 const fg = hcl(bg).l > 55 ? "black" : "white";
                 style = `style="background-color:${bg};color:${fg}"`;
               }
-              return /* html */ `<td class="text-end" ${style}>${format.num(val)}</td>`;
+              return /* html */ `<td class="text-end" ${style}>${num.format(val)}</td>`;
             })
             .join("")}
         </tr>`
