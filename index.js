@@ -2,7 +2,7 @@ import { subtotal } from "./subtotal.js";
 
 export function insightTree(
   selector,
-  { data, groups, metrics, sort, rankBy, render = debugRender, totalGroup }
+  { data, groups, metrics, sort, rankBy, render = debugRender, totalGroup },
 ) {
   // Calculate the tree data structure
   const tree = subtotal({ data, groups, metrics, sort, rankBy, totalGroup });
@@ -14,30 +14,38 @@ export function insightTree(
   for (const leaf of el.querySelectorAll(`[data-insight-level="${groups.length}"]`))
     leaf.classList.add("insight-leaf");
   // Listen to clicks and expand/collapse nodes
-  el.addEventListener("click", toggle.bind(el, tree));
+  el.addEventListener("click", (e) => {
+    // Find the node that was clicked
+    const node = e.target.closest("[data-insight-level]");
+    if (node) toggle.bind(el, tree)(node);
+  });
   return {
     data: tree,
     update: update.bind(el, tree),
+    toggle: toggle.bind(el, tree),
+    filter: filter.bind(el, tree),
   };
 }
 
-function toggle(tree, e) {
-  // Find the node that was clicked
-  const node = e.target.closest("[data-insight-level]");
-  if (node == null) return;
+function toggle(tree, node, force) {
   // Find the index of the node in the list of nodes
   const nodes = this.querySelectorAll("[data-insight-level]");
   let i = 0;
   for (; i < nodes.length; i++) if (nodes[i] === node) break;
   // Toggle the node
   const nodeLevel = +node.dataset.insightLevel;
-  const nodeClosed = node.classList.contains("insight-closed");
-  node.classList.toggle("insight-closed");
+  if (force === undefined || force === null) force = node.classList.contains("insight-closed");
+  node.classList.toggle("insight-closed", !force);
   // Toggle all child nodes
   for (let j = i + 1; j < tree.length && tree[j]._level > nodeLevel; j++) {
-    nodes[j].classList.toggle("insight-hidden", nodeClosed ? tree[j]._level > nodeLevel + 1 : true);
+    nodes[j].classList.toggle("insight-hidden", !force || tree[j]._level > nodeLevel + 1);
     nodes[j].classList.toggle("insight-closed", true);
   }
+}
+
+function filter(tree, filter) {
+  const nodes = this.querySelectorAll("[data-insight-level]");
+  nodes.forEach((node, i) => toggle.bind(this)(tree, node, filter(tree[i], node)));
 }
 
 function update(tree, { rank, level }) {
@@ -68,7 +76,7 @@ const debugRender = (el, tree) => {
     style="padding-left: ${_level * 1.5}rem">
   <span class="insight-toggle"></span>
   <code>#${_rank} ${_group}: ${JSON.stringify(row)}</code>
-</div>`
+</div>`,
   );
   el.innerHTML = html.join("");
 };

@@ -104,6 +104,29 @@ This tree:
 
 [Source code](sales-tutorial-2.html ":include :type=code")
 
+## Expand or collapse nodes
+
+Call `tree.toggle(node, true)` to expand a specific node. `.toggle(node, false)` collapses it. `.toggle(node)` toggles it.
+
+[![Tutorial - 2a](sales-tutorial-2a.gif)](sales-tutorial-2a.html ":include :type=html height=200px")
+
+[Source code](sales-tutorial-2a.html ":include :type=code")
+
+## Expand or collapse the tree
+
+Call `tree.filter((row, node) => ...)` to expand or collapse each node in the tree based on a rule.
+
+It accepts a function that returns `true` to expand the node, `false` to collapse it. It takes 2 parameters:
+
+1. `row`: an object containing `{_level, _rank, _group, ...}` and all group keys for the row
+2. `node`: the DOM node for the row
+
+For example, `tree.filter((row) => row._level == 0 || row._group == 'Bonn')` to expand all rows of level 0, and any row with the group "Bonn".
+
+[![Tutorial - 2b](sales-tutorial-2b.png)](sales-tutorial-2b.html ":include :type=html height=200px")
+
+[Source code](sales-tutorial-2b.html ":include :type=code")
+
 ## Style the tree
 
 [`insightTree()`](api.md) adds classes and attributes to each row. A may have these classes:
@@ -111,9 +134,9 @@ This tree:
 - `.insight-current` on current ranked insight. Default style: `background-color: ##ffc107`. Set to `background-color: gold` to color it gold.
 - `.insight-highlight` on higher ranked insights. Default style: `font-weight: bold`. Set to `font-weight: normal; color: red` to color it red.
 - `.insight-hidden` on lower ranked insights. Default style: `display: none`. Set to `display: block; color: lightgrey` to show them in gray.
-- `.insight-closed` on closed insights. Any child `.insight-toggle` is styled as
-  - `.insight-toggle:before { content: "▶"; }` when open
-  - This is rotated 90 degrees clockwise when closed (like ▼)
+- `.insight-closed` on collapsed insights. Any child `.insight-toggle` is styled as
+  - `.insight-toggle:before { content: "▶"; }` when expanded
+  - This is rotated 90 degrees clockwise when collapsed (like ▼)
 
 A row always has these attributes:
 
@@ -206,7 +229,7 @@ The `render()` function is passed the element `el` and tree `tree`. The tree is 
 - You MUST add `data-insight-level="${_level}` to each row
 - You MUST add `data-insight-rank=${_rank}"` to each row
 - Indent based on `_level`
-- Add a `<span class="insight-toggle"></span>` inside the row to show the expand/collapse icon
+- Add a `<span class="insight-toggle"></span>` inside the row to show the expand / collapse icon
 
 ## Integrating with other libraries
 
@@ -393,8 +416,19 @@ It returns a `tree` object has the following methods:
   - `tree.update({ rank: 5 })` shows the top 5 insights
   - `tree.update({ level: 2 })` shows the level 1 (root) + level 2 (child) rows
   - `tree.update({ rank: 5, level: 2 })` shows the top 5 insights AND all level 1 + level 2 rows
+- `toggle(node, force)` expands or collapses the specified node. For example:
+  - `tree.toggle(document.querySelector("[data-insight-level=0]"))` toggles the root node
+  - `tree.toggle(document.querySelector("[data-insight-level=0]"), true)` expands the root node
+  - `tree.toggle(document.querySelector("[data-insight-level=0]"), true)` collapses the root node
 
 # Release notes
+
+## 2.1.0
+
+13 Sep 2023
+
+- `insightTree().toggle(node)` expands/collapses a specific node
+- `insightTree().filter(filter)` expands/collapses the tree
 
 ## 2.0.0
 

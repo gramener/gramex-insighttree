@@ -8,17 +8,18 @@
     "build-browser": "esbuild index.js --format=iife --global-name=gramex --bundle --sourcemap --minify --outfile=insighttree.min.js",
     "build-esm": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js",
     "build": "npm run build-browser && npm run build-esm",
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "files": [
+    "README.md",
     "index.js",
     "subtotal.js",
     "insighttree.*"
   ],
   "repository": {
     "type": "git",
-    "url": "https://code.gramener.com/cto/insighttree"
+    "url": "git+https://code.gramener.com/cto/insighttree"
   },
   "keywords": [
     "hierarchy",
@@ -32,7 +33,7 @@
   "contributors": [
     "Chandana Sagar <chandana.sagar@gramener.com>"
   ],
-  "license": "AGPL-3.0-or-later",
+  "license": "MIT",
   "bugs": {
     "url": "https://code.gramener.com/cto/insighttree/-/issues"
   },
@@ -49,6 +50,7 @@
     "eslint": "^8.37.0",
     "eslint-plugin-html": "^7.1.0",
     "jest": "^28.1.0",
-    "jest-environment-jsdom": "^29.5.0"
+    "jest-environment-jsdom": "^29.5.0",
+    "prettier": "^3.0.3"
   }
 }

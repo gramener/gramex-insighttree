@@ -41,7 +41,7 @@ describe("subtotal", () => {
         data,
         groups: { 0: "a", 1: ({ a, b }) => `${a[1]}${b[1]}` },
         metrics: ["x", "y", "z"],
-      })
+      }),
     ).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 51, y: 57, z: 63 },
       { _group: "a1", _level: 1, _rank: 2, 0: "a1", x: 12, y: 15, z: 18 },
@@ -86,7 +86,7 @@ describe("subtotal", () => {
           p: (data) => Math.round((agg.sum("x", data) / agg.sum("y", data)) * 100),
           q: (data) => Math.round((agg.sum("x", data) / agg.sum("y", data)) * 100),
         },
-      })
+      }),
     ).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 8.5, p: 89, q: 89, y: 2, z: 6 },
       { _group: "a1", _level: 1, _rank: 2, a: "a1", x: 4, p: 80, q: 80, y: 2, z: 3 },
@@ -128,7 +128,7 @@ describe("subtotal", () => {
   });
   test("sort can be {col: '+col', col: '-col'}", () => {
     expect(
-      subtotal({ data, groups: ["a", "b"], metrics: ["x"], sort: { a: "+x", b: "-x" } })
+      subtotal({ data, groups: ["a", "b"], metrics: ["x"], sort: { a: "+x", b: "-x" } }),
     ).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 51 },
       { _group: "a1", _level: 1, _rank: 2, a: "a1", x: 12 },
@@ -148,7 +148,7 @@ describe("subtotal", () => {
         groups: ["a", "b"],
         metrics: ["x"],
         sort: { a: "+x", b: (a, b) => (a.x > b.x ? -1 : a.x < b.x ? +1 : 0) },
-      })
+      }),
     ).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 51 },
       { _group: "a1", _level: 1, _rank: 2, a: "a1", x: 12 },
@@ -196,7 +196,7 @@ describe("subtotal", () => {
         groups: ["a"],
         metrics: ["x"],
         rankBy: ({ _level, _group, x }) => _level + _group.length - x,
-      })
+      }),
     ).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 51 },
       { _group: "a1", _level: 1, _rank: 3, a: "a1", x: 12 },
@@ -217,7 +217,7 @@ describe("tutorial - custom aggregation", () => {
         data: data,
         groups: ["a"],
         metrics: ["x", "y", "z"],
-      })
+      }),
     ).toEqual([
       { _level: 0, _rank: 1, _group: "Total", x: 51, y: 57, z: 63 },
       { _level: 1, _rank: 2, _group: "a1", a: "a1", x: 12, y: 15, z: 18 },
@@ -231,7 +231,7 @@ describe("tutorial - custom aggregation", () => {
         data: data,
         groups: { a: "a", b: (row) => row.b.slice(-1) },
         metrics: ["x"],
-      })
+      }),
     ).toEqual([
       { _level: 0, _rank: 1, _group: "Total", x: 51 },
       { _level: 1, _rank: 2, _group: "a1", a: "a1", x: 12 },
@@ -256,7 +256,7 @@ describe("tutorial - custom aggregation", () => {
           z: (data) => data[0].z,
           diff: (data, result) => result.x - result.y,
         },
-      })
+      }),
     ).toEqual([
       { _level: 0, _rank: 1, _group: "Total", x: 51, y: 9.5, z: 3, diff: 41.5 },
       { _level: 1, _rank: 2, _group: "a1", a: "a1", x: 12, y: 5, z: 3, diff: 7 },
@@ -271,7 +271,7 @@ describe("tutorial - custom aggregation", () => {
         groups: ["a", "b"],
         metrics: ["x"],
         sort: "-x",
-      })
+      }),
     ).toEqual([
       { _level: 0, _rank: 1, _group: "Total", x: 51 },
       { _level: 1, _rank: 2, _group: "a2", a: "a2", x: 39 },
@@ -295,7 +295,7 @@ describe("tutorial - custom aggregation", () => {
           a: "+x",
           b: (m, n) => (m.b.slice(-1) < n.b.slice(-1) ? -1 : 1),
         },
-      })
+      }),
     ).toEqual([
       { _level: 0, _rank: 1, _group: "Total", x: 51 },
       { _level: 1, _rank: 2, _group: "a1", a: "a1", x: 12 },

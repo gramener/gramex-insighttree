@@ -130,7 +130,7 @@ const insightTreeRender = (el, tree, { metrics }) => {
           .map(
             (metric) => /* html */ `
           <th class="text-end ${metric == rankBy ? "bg-warning" : ""}">${metric}</th>
-        `
+        `,
           )
           .join("")}
       </tr>
@@ -156,7 +156,7 @@ const insightTreeRender = (el, tree, { metrics }) => {
               return /* html */ `<td class="text-end" ${style}>${num.format(val)}</td>`;
             })
             .join("")}
-        </tr>`
+        </tr>`,
         )
         .join("")}
     </tbody>

@@ -13,7 +13,7 @@ export function subtotal({
   let groupNames = Object.keys(groups);
   // Convert string values into accessors
   let groupValues = Object.values(groups).map((col) =>
-    typeof col === "function" ? col : (d) => d[col]
+    typeof col === "function" ? col : (d) => d[col],
   );
 
   if (typeof metrics != "object" || metrics === null)
@@ -38,7 +38,7 @@ export function subtotal({
           : order[0] == "-"
           ? sorters.descending(order.slice(1))
           : sorters.ascending(order)
-        : order
+        : order,
     )
     .map((order) => (order ? (a, b) => order(a.metrics, b.metrics) : order));
 
@@ -122,6 +122,6 @@ export const agg = {
 };
 
 const sorters = {
-  ascending: (key) => (a, b) => a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0,
-  descending: (key) => (a, b) => a[key] > b[key] ? -1 : a[key] < b[key] ? 1 : 0,
+  ascending: (key) => (a, b) => (a[key] < b[key] ? -1 : a[key] > b[key] ? 1 : 0),
+  descending: (key) => (a, b) => (a[key] > b[key] ? -1 : a[key] < b[key] ? 1 : 0),
 };
