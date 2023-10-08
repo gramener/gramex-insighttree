@@ -1,3 +1,19 @@
+/**
+ * Calculates a hierarchical tree structure based on the provided data and configuration.
+ *
+ * @function
+ * @param {Object} options - Configuration for the tree calculation.
+ * @param {Object[]} options.data - An array of objects representing the data rows.
+ * @param {(string[]|Object)} options.groups - ['col', ...] or {col: row => ...} defines the hierarchy levels of the tree.
+ * @param {(string[]|Object)} options.metrics - ['col', ...] or {col: 'sum', col: d => ...} specifies the metrics to aggregate.
+ * @param {string|Object} [options.sort] - '+col', '-col', or {col1: '-col2', ...} defines the sorting criteria for each level.
+ * @param {string|function} [options.rankBy] - '+col', '-col', or d => ... specifies the metric to rank insights by.
+ * @param {string} [options.totalGroup="Total"] - Name of the total row's `_group`.
+ *
+ * @returns {Object[]} - Returns an array of objects representing the calculated tree structure.
+ *
+ * @throws {Error} Throws an error for invalid `groups`, `metrics`, `sort`, or `rankBy` configurations.
+ */
 export function subtotal({
   data,
   groups,
@@ -56,7 +72,7 @@ export function subtotal({
       rankBy = (d) => d[rankByCol];
     }
   } else if (typeof rankBy !== "function")
-    throw new Error(`rankBy must be a function, +column, -column, not ${rankBy}`);
+    throw new Error(`rankBy must be a '+col', '-col', d => ..., not ${rankBy}`);
 
   // Return { metric: fn(data) } for based on each metric's function
   function reduce(data, context) {

@@ -3,12 +3,16 @@
   "version": "2.0.0",
   "description": "The Insight Tree component breaks down a metric into a hierarchy (tree) and highlights the biggest drivers of that metric.",
   "type": "module",
+  "module": "insighttree.js",
+  "browser": "insighttree.min.js",
   "scripts": {
+    "lint": "npx prettier --write index.js package.json '*.{css,yaml,md}' '{docs,app,tests}/*.{js,css,md}'",
     "watch": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js --watch",
     "build-browser": "esbuild index.js --format=iife --global-name=gramex --bundle --sourcemap --minify --outfile=insighttree.min.js",
     "build-esm": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js",
     "build": "npm run build-browser && npm run build-esm",
     "prepublishOnly": "npm run build",
+    "pretest": "npm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "files": [

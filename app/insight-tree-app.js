@@ -3,7 +3,7 @@ import { dsvFormat } from "https://cdn.skypack.dev/d3-dsv@3";
 import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
 import { hcl } from "https://cdn.skypack.dev/d3-color@3";
 import { insightTree } from "../index.js";
-import { num } from "./format.js";
+import { num } from "https://cdn.jsdelivr.net/npm/@gramex/ui/dist/format.js";
 
 const $data = document.querySelector("#data");
 const $slider = document.querySelector("#slider");
@@ -153,7 +153,7 @@ const insightTreeRender = (el, tree, { metrics }) => {
                 const fg = hcl(bg).l > 55 ? "black" : "white";
                 style = `style="background-color:${bg};color:${fg}"`;
               }
-              return /* html */ `<td class="text-end" ${style}>${num.format(val)}</td>`;
+              return /* html */ `<td class="text-end" ${style}>${num(val)}</td>`;
             })
             .join("")}
         </tr>`,

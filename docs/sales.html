@@ -12,7 +12,7 @@
   import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
   const color = scaleLinear().domain([0.5, 1, 1.2]).range(["red", "yellow", "lime"]);
 
-  import { pc, num } from "../app/format.js";
+  import { num, pc } from "https://cdn.jsdelivr.net/npm/@gramex/ui/dist/format.js";
 
   const tree = insightTree(".sales-tree", {
     data: data,
@@ -34,12 +34,12 @@
               <td style="padding-left:${_level * 1.5}rem">
                 <span class="insight-toggle"></span> ${_group}
               </td>
-              <td class="text-end">${num.format(sales - target)}</td>
+              <td class="text-end">${num(sales - target)}</td>
               <td class="text-end" style="background-color:${color(sales / target)}">
-                ${pc.format(sales / target)}
+                ${pc(sales / target)}
               </td>
-              <td class="text-end">${num.format(sales)}</td>
-              <td class="text-end">${num.format(target)}</td>
+              <td class="text-end">${num(sales)}</td>
+              <td class="text-end">${num(target)}</td>
             </tr>`
             )
             .join("")}

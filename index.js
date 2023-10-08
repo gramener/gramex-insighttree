@@ -1,5 +1,40 @@
 import { subtotal } from "./subtotal.js";
 
+/**
+ * Renders a hierarchical tree based on the provided data and configuration.
+ *
+ * This function calculates a tree data structure based on the input data and configuration,
+ * then renders the tree into the specified DOM element. It also provides interactivity
+ * to expand or collapse nodes upon user clicks.
+ *
+ * @function
+ * @param {string} selector - The CSS selector of the DOM element where the tree will be rendered.
+ * @param {Object} options - Configuration for the tree rendering and interaction.
+ * @param {Object[]} options.data - An array of objects representing the data rows.
+ * @param {(string[]|Object)} options.groups - Defines the hierarchy levels of the tree.
+ * @param {(string[]|Object)} options.metrics - Specifies the metrics to aggregate.
+ * @param {string|Object} [options.sort] - Defines the sorting criteria for each level.
+ * @param {string|function} [options.rankBy] - Specifies the metric to rank insights by.
+ * @param {function} [options.render=debugRender] - A function to render the tree.
+ * @param {string} [options.totalGroup="Total"] - Name of the total row's `_group`.
+ *
+ * @returns {Object} - Returns an object with methods to interact with the rendered tree.
+ * @returns {Object[]} .data - The calculated tree data structure.
+ * @returns {function} .update - Method to update the tree.
+ * @returns {function} .toggle - Method to toggle nodes' expansion or collapse state.
+ * @returns {function} .filter - Method to filter nodes based on a rule.
+ *
+ * @example
+ * const tree = insightTree("#myTree", {
+ *   data: [...],
+ *   groups: ["a", "b"],
+ *   metrics: ["x", "y"],
+ *   sort: "+x",
+ *   rankBy: "x"
+ * });
+ *
+ * @throws {Error} Throws an error if the provided selector does not match any DOM element.
+ */
 export function insightTree(
   selector,
   { data, groups, metrics, sort, rankBy, render = debugRender, totalGroup },
@@ -27,6 +62,33 @@ export function insightTree(
   };
 }
 
+/**
+ * Toggles the expansion or collapse state of the specified node.
+ *
+ * If `force` is not provided, toggles the node.
+ * `force=true` expands the node.
+ * `force=false` collapses the node.
+ *
+ * Uses `data-insight-level` to determine levels.
+ * After toggling, it also toggles the visibility of all child nodes.
+ * Direct children are shown/hidden based when the node is expanded/collapsed.
+ * Grandchildren and below are always hidden.
+ *
+ * @function
+ * @param {Object[]} tree - The tree data structure containing nodes with `_level`, `_rank`, `_group`, etc.
+ * @param {HTMLElement} node - The DOM node to be toggled.
+ * @param {boolean?} [force] - `true` expandes node. `false` collapses node. If skipped, toggles node.
+ *
+ * @example
+ * // Toggle the root node
+ * toggle(treeData, document.querySelector("[data-insight-level=0]"));
+ * // Expand the root node
+ * toggle(treeData, document.querySelector("[data-insight-level=0]"), true);
+ * // Collapse the root node
+ * toggle(treeData, document.querySelector("[data-insight-level=0]"), false);
+ *
+ * @returns {void}
+ */
 function toggle(tree, node, force) {
   // Find the index of the node in the list of nodes
   const nodes = this.querySelectorAll("[data-insight-level]");
@@ -43,11 +105,53 @@ function toggle(tree, node, force) {
   }
 }
 
+/**
+ * Filters the tree nodes based on a specified rule, expanding or collapsing each node accordingly.
+ *
+ * Uses `data-insight-level` to determine levels.
+ * Applies the filter function to each node and expands the row if it returns `true`, else collapses it.
+ * The filter function receives two parameters:
+ * - `row`: The node object with properties like `_level`, `_rank`, `_group`, and all group keys for the row.
+ * - `node`: The DOM node corresponding to the row.
+ *
+ * @function
+ * @param {Object[]} tree - The tree data structure containing nodes with `_level`, `_rank`, `_group`, etc.
+ * @param {function(Object, HTMLElement): boolean} filter - function(row, node) that returns true/false to expand/collapse node
+ *
+ * @example
+ * // Assuming the DOM has nodes with `data-insight-level` attribute and a corresponding tree data structure.
+ * filter(treeData, (row) => row._level == 0 || row._group == 'Bonn');
+ *
+ * @returns {void}
+ */
 function filter(tree, filter) {
   const nodes = this.querySelectorAll("[data-insight-level]");
   nodes.forEach((node, i) => toggle.bind(this)(tree, node, filter(tree[i], node)));
 }
 
+/**
+ * Updates the visibility and styling of tree nodes based on the specified rank and level criteria.
+ *
+ * Uses `data-insight-level` and `data-insight-rank` of the nodes to determine levels and ranks.
+ *
+ * - Nodes with a rank == options.rank will have ".insight-current".
+ * - Nodes with a rank <= options.rank will have ".insight-highlight".
+ * - Nodes will be shown if their rank <= options.rank, or level <= options.level,
+ *   or they have a child node that meets the rank criteria.
+ * - Closed nodes (without a child that meets the rank criteria) will have ".insight-closed".
+ *
+ * @function
+ * @param {Object[]} tree - The tree data structure containing nodes with `_level` and `_rank` properties.
+ * @param {Object} options - The criteria for updating the tree nodes.
+ * @param {number} [options.rank] - The rank criteria. Nodes with rank <= options.rank will be highlighted.
+ * @param {number} [options.level] - The level criteria. Nodes with level <= options.value will be shown.
+ *
+ * @example
+ * // Assuming the DOM has nodes with `data-insight-level` and `data-insight-rank` attributes.
+ * update(treeData, { rank: 3, level: 2 });
+ *
+ * @returns {void}
+ */
 function update(tree, { rank, level }) {
   const nodes = this.querySelectorAll("[data-insight-level]");
   rank = +rank;
@@ -69,6 +173,11 @@ function update(tree, { rank, level }) {
   });
 }
 
+/**
+ * A simple renderer that shows each insight as an indented row in monospace.
+ * @param {*} el
+ * @param {*} tree
+ */
 const debugRender = (el, tree) => {
   const html = tree.map(
     ({ _level, _rank, _group, ...row }) => /* html */ `
