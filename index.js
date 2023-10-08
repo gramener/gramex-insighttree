@@ -35,10 +35,7 @@ import { subtotal } from "./subtotal.js";
  *
  * @throws {Error} Throws an error if the provided selector does not match any DOM element.
  */
-export function insightTree(
-  selector,
-  { data, groups, metrics, sort, rankBy, render = debugRender, totalGroup },
-) {
+export function insightTree(selector, { data, groups, metrics, sort, rankBy, render = debugRender, totalGroup }) {
   // Calculate the tree data structure
   const tree = subtotal({ data, groups, metrics, sort, rankBy, totalGroup });
   // Render the tree
@@ -46,19 +43,25 @@ export function insightTree(
   if (!el) throw new Error(`selector ${selector} missing`);
   render(el, tree, { selector, data, groups, metrics, sort, rankBy });
   // Mark leaf nodes
-  for (const leaf of el.querySelectorAll(`[data-insight-level="${groups.length}"]`))
-    leaf.classList.add("insight-leaf");
+  for (const leaf of el.querySelectorAll(`[data-insight-level="${groups.length}"]`)) leaf.classList.add("insight-leaf");
   // Listen to clicks and expand/collapse nodes
   el.addEventListener("click", (e) => {
     // Find the node that was clicked
     const node = e.target.closest("[data-insight-level]");
     if (node) toggle.bind(el, tree)(node);
   });
+  // Compute all leaves sorted by _rank
+  const rankedLeaf = tree
+    .map((node, i) => (i === tree.length - 1 || tree[i + 1]._level <= node._level ? { i, rank: node._rank } : null))
+    .filter(Boolean)
+    .sort((a, b) => a.rank - b.rank)
+    .map((leaf) => leaf.i);
   return {
     data: tree,
     update: update.bind(el, tree),
     toggle: toggle.bind(el, tree),
     filter: filter.bind(el, tree),
+    updateLeaf: updateLeaf.bind(el, rankedLeaf, tree),
   };
 }
 
@@ -77,7 +80,7 @@ export function insightTree(
  * @function
  * @param {Object[]} tree - The tree data structure containing nodes with `_level`, `_rank`, `_group`, etc.
  * @param {HTMLElement} node - The DOM node to be toggled.
- * @param {boolean?} [force] - `true` expandes node. `false` collapses node. If skipped, toggles node.
+ * @param {boolean?} [force] - `true` expands node. `false` collapses node. If skipped, toggles node.
  *
  * @example
  * // Toggle the root node
@@ -170,6 +173,39 @@ function update(tree, { rank, level }) {
     const show = nodeRank <= rank || nodeLevel <= level || hasOpenChild;
     el.classList.toggle("insight-hidden", !show);
     el.classList.toggle("insight-closed", !hasOpenChild);
+  });
+}
+
+function updateLeaf(rankedLeaf, tree, leaf) {
+  leaf = Array.isArray(leaf) ? leaf : [leaf];
+  // If any leaf is not a number or less than 0, set it to 0. If any leaf is greater than the number of leaves, set it to the last leaf.
+  leaf = leaf.map((l) => (typeof l !== "number" || l < 0 ? 0 : l >= rankedLeaf.length ? rankedLeaf.length - 1 : l));
+  const indices = leaf.map((l) => rankedLeaf[l]);
+  const nodes = this.querySelectorAll("[data-insight-level]");
+  const directParents = new Set();
+  const parentSiblings = new Set();
+  // Highlight all indices
+  for (const leafIndex of indices) {
+    nodes[leafIndex].classList.add("insight-current", "insight-highlight", "insight-closed");
+    nodes[leafIndex].classList.remove("insight-hidden");
+    // Find all parents
+    const parents = [];
+    for (let i = leafIndex - 1, currentLevel = tree[leafIndex]._level; i >= 0; i--)
+      if (tree[i]._level < currentLevel) {
+        parents.push(i);
+        directParents.add(i);
+        currentLevel = tree[i]._level;
+      }
+    parents.forEach((parent) => {
+      for (let i = parent - 1; i >= 0 && tree[i]._level >= tree[parent]._level; i--)
+        if (tree[i]._level === tree[parent]._level) parentSiblings.add(i);
+      for (let i = parent + 1; i < tree.length && tree[i]._level >= tree[parent]._level; i++)
+        if (tree[i]._level === tree[parent]._level) parentSiblings.add(i);
+    });
+  }
+  nodes.forEach((el, i) => {
+    el.classList.toggle("insight-hidden", !directParents.has(i) && !parentSiblings.has(i) && !indices.includes(i));
+    el.classList.toggle("insight-closed", !directParents.has(i));
   });
 }
 

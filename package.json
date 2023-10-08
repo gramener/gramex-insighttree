@@ -47,7 +47,7 @@
   },
   "homepage": "https://gramener.com/insighttree/",
   "prettier": {
-    "printWidth": 100
+    "printWidth": 120
   },
   "devDependencies": {
     "esbuild": "^0.17.12",

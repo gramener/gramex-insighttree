@@ -14,8 +14,7 @@ describe("insightTree", () => {
         expect(el.tagName).toEqual("BODY");
         expect(tree.length).toEqual(9);
         for (const node of tree)
-          for (const property of ["_level", "_group", "_rank", "x", "y"])
-            expect(node).toHaveProperty(property);
+          for (const property of ["_level", "_group", "_rank", "x", "y"]) expect(node).toHaveProperty(property);
         expect(tree[0]).not.toHaveProperty("a");
         expect(tree[0]).not.toHaveProperty("b");
         expect(tree[1]).toHaveProperty("a");

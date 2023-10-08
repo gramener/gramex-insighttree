@@ -104,6 +104,14 @@ This tree:
 
 [Source code](sales-tutorial-2.html ":include :type=code")
 
+## Expand or collapse deep insights
+
+Call `tree.updateLeaf(0)` to show only the top "deep" insight. This is the top insight that has no children.
+
+[![Tutorial - 2c](sales-tutorial-2c.gif)](sales-tutorial-2c.html ":include :type=html height=380px")
+
+Move the slider to show the next or previous deep insight - highlighted in orange.
+
 ## Expand or collapse nodes
 
 Call `tree.toggle(node, true)` to expand a specific node. `.toggle(node, false)` collapses it. `.toggle(node)` toggles it.
@@ -259,9 +267,7 @@ Also replace:
 ... with a cell that is colored based on the sales/target ratio:
 
 ```html
-<td class="text-end" style="background-color:${color(sales / target)};color:black">
-  ${sales - target}
-</td>
+<td class="text-end" style="background-color:${color(sales / target)};color:black">${sales - target}</td>
 ```
 
 [![Tutorial - 5](sales-tutorial-5.png)](sales-tutorial-5.html ":include :type=html height=350px")

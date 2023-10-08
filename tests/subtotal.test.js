@@ -18,9 +18,7 @@ describe("subtotal", () => {
     expect(() => subtotal({ data, groups: true })).toThrow();
   });
   test("groups can be empty list -- just calculate total", () => {
-    expect(subtotal({ data, groups: [], metrics: ["x"] })).toEqual([
-      { _level: 0, _rank: 1, _group: "Total", x: 51 },
-    ]);
+    expect(subtotal({ data, groups: [], metrics: ["x"] })).toEqual([{ _level: 0, _rank: 1, _group: "Total", x: 51 }]);
   });
   test("groups, metrics can be list of column names", () => {
     expect(subtotal({ data, groups: ["a", "b"], metrics: ["x", "y", "z"] })).toEqual([
@@ -127,9 +125,7 @@ describe("subtotal", () => {
     ]);
   });
   test("sort can be {col: '+col', col: '-col'}", () => {
-    expect(
-      subtotal({ data, groups: ["a", "b"], metrics: ["x"], sort: { a: "+x", b: "-x" } }),
-    ).toEqual([
+    expect(subtotal({ data, groups: ["a", "b"], metrics: ["x"], sort: { a: "+x", b: "-x" } })).toEqual([
       { _group: "Total", _level: 0, _rank: 1, x: 51 },
       { _group: "a1", _level: 1, _rank: 2, a: "a1", x: 12 },
       { _group: "b3", _level: 2, _rank: 3, a: "a1", b: "b3", x: 7 },

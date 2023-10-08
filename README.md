@@ -17,5 +17,5 @@ Here's a sample output:
 ## Documentation
 
 - [**Home page**](https://gramener.com/insighttree/)
-- [**Documentation**](https://gramener.com/docs/)
+- [**Documentation**](https://gramener.com/insighttree/docs/)
 - [**Source**](https://code.gramener.com/cto/insighttree/)

@@ -114,11 +114,7 @@ const insightTreeRender = (el, tree, { metrics }) => {
   const rankByDescending = document.querySelector("#rankby-descending").checked;
   const rankByValues = tree.map((d) => d[rankBy]).sort();
   const color = scaleLinear()
-    .domain([
-      Math.min(...rankByValues),
-      rankByValues[Math.floor(rankByValues.length / 2)],
-      Math.max(...rankByValues),
-    ])
+    .domain([Math.min(...rankByValues), rankByValues[Math.floor(rankByValues.length / 2)], Math.max(...rankByValues)])
     .range(rankByDescending ? ["green", "yellow", "red"] : ["red", "yellow", "green"]);
   el.innerHTML = /* html */ `
   <table class="table table-sm w-auto">
