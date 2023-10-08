@@ -14,23 +14,14 @@
  *
  * @throws {Error} Throws an error for invalid `groups`, `metrics`, `sort`, or `rankBy` configurations.
  */
-export function subtotal({
-  data,
-  groups,
-  metrics,
-  sort,
-  rankBy = undefined,
-  totalGroup = "Total",
-}) {
+export function subtotal({ data, groups, metrics, sort, rankBy = undefined, totalGroup = "Total" }) {
   if (typeof groups != "object" || groups === null)
     throw new Error(`groups must be ['col', ...] or {col: row => ...}, not ${groups}`);
   // Convert array of strings [x, y, z] into object {x: x, y: y, z: z}
   if (Array.isArray(groups)) groups = Object.fromEntries(groups.map((col) => [col, col]));
   let groupNames = Object.keys(groups);
   // Convert string values into accessors
-  let groupValues = Object.values(groups).map((col) =>
-    typeof col === "function" ? col : (d) => d[col],
-  );
+  let groupValues = Object.values(groups).map((col) => (typeof col === "function" ? col : (d) => d[col]));
 
   if (typeof metrics != "object" || metrics === null)
     throw new Error(`metrics must be ['col', ...] or {col: 'sum', col: d => ...}, not ${metrics}`);
@@ -71,8 +62,7 @@ export function subtotal({
       const rankByCol = rankBy;
       rankBy = (d) => d[rankByCol];
     }
-  } else if (typeof rankBy !== "function")
-    throw new Error(`rankBy must be a '+col', '-col', d => ..., not ${rankBy}`);
+  } else if (typeof rankBy !== "function") throw new Error(`rankBy must be a '+col', '-col', d => ..., not ${rankBy}`);
 
   // Return { metric: fn(data) } for based on each metric's function
   function reduce(data, context) {

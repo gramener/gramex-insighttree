@@ -6,7 +6,7 @@
   "module": "insighttree.js",
   "browser": "insighttree.min.js",
   "scripts": {
-    "lint": "npx prettier --write index.js package.json '*.{css,yaml,md}' '{docs,app,tests}/*.{js,css,md}'",
+    "lint": "npx prettier --write index.js subtotal.js package.json '*.{css,yaml,md}' '{docs,app,tests}/*.{js,css,md}'",
     "watch": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js --watch",
     "build-browser": "esbuild index.js --format=iife --global-name=gramex --bundle --sourcemap --minify --outfile=insighttree.min.js",
     "build-esm": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js",
