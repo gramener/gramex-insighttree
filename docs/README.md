@@ -106,7 +106,7 @@ This tree:
 
 ## Expand or collapse deep insights
 
-Call `tree.updateLeaf(0)` to show only the top "deep" insight. This is the top insight that has no children.
+Call `tree.updateLeaf(1)` to show first top "deep" insight (i.e. at the deepest segment -- a leaf node).
 
 [![Tutorial - 2c](sales-tutorial-2c.gif)](sales-tutorial-2c.html ":include :type=html height=380px")
 
@@ -221,9 +221,12 @@ The `render()` function is passed the element `el` and tree `tree`. The tree is 
 ];
 ```
 
+It has these keys:
+
 - `_level`: level of indentation
 - `_rank`: rank of the insight. `1` is the highest ranked insight.
 - `_group`: current group value. For `_level == 1`, this is the `city`, for `_level == 2`, this is the `product`, etc.
+- `_visitOrder`: when exploring by rank, this is the sequence when you'd reach this node. High `_visitOrder` indicates a rare insight
 - All other groups keys, i.e.
   - `city` (if `_level >= 1`),
   - `product` (if `_level >= 2`)

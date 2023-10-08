@@ -77,6 +77,18 @@ export function subtotal({ data, groups, metrics, sort, rankBy = undefined, tota
     .map((v) => [rankBy(v), v])
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
     .forEach(([, v], i) => (v._rank = i + 1));
+  // Add visit order via rank-based traversal
+  function traverseTree(pendingList, visitOrder = 0) {
+    while (pendingList.length) {
+      const node = pendingList.shift();
+      node.metrics._visitOrder = visitOrder++;
+      if (node.children) {
+        pendingList = pendingList.concat(Array.from(node.children.values()));
+        pendingList.sort((a, b) => a.metrics._rank - b.metrics._rank);
+      }
+    }
+  }
+  traverseTree([tree]);
   return result;
 }
 

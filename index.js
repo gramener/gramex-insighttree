@@ -179,15 +179,14 @@ function update(tree, { rank, level }) {
 function updateLeaf(rankedLeaf, tree, leaf) {
   leaf = Array.isArray(leaf) ? leaf : [leaf];
   // If any leaf is not a number or less than 0, set it to 0. If any leaf is greater than the number of leaves, set it to the last leaf.
-  leaf = leaf.map((l) => (typeof l !== "number" || l < 0 ? 0 : l >= rankedLeaf.length ? rankedLeaf.length - 1 : l));
-  const indices = leaf.map((l) => rankedLeaf[l]);
+  leaf = leaf.map((l) => (typeof l !== "number" || l < 1 ? 1 : l > rankedLeaf.length ? rankedLeaf.length : l));
+  const indices = leaf.map((l) => rankedLeaf[l - 1]);
   const nodes = this.querySelectorAll("[data-insight-level]");
   const directParents = new Set();
   const parentSiblings = new Set();
+  const highlight = new Set(indices);
   // Highlight all indices
   for (const leafIndex of indices) {
-    nodes[leafIndex].classList.add("insight-current", "insight-highlight", "insight-closed");
-    nodes[leafIndex].classList.remove("insight-hidden");
     // Find all parents
     const parents = [];
     for (let i = leafIndex - 1, currentLevel = tree[leafIndex]._level; i >= 0; i--)
@@ -204,7 +203,9 @@ function updateLeaf(rankedLeaf, tree, leaf) {
     });
   }
   nodes.forEach((el, i) => {
-    el.classList.toggle("insight-hidden", !directParents.has(i) && !parentSiblings.has(i) && !indices.includes(i));
+    el.classList.toggle("insight-current", highlight.has(i));
+    el.classList.toggle("insight-highlight", highlight.has(i));
+    el.classList.toggle("insight-hidden", !directParents.has(i) && !parentSiblings.has(i) && !highlight.has(i));
     el.classList.toggle("insight-closed", !directParents.has(i));
   });
 }
