@@ -429,35 +429,30 @@ It returns a `tree` object has the following methods:
 
 # Release notes
 
-## 2.1.0
+- 2.0.0: 7 Oct 2023. `update()` implemented
+  - Breaking change: `decode({drop})` is not supported. Use `decode({pruneString, pruneObject, pruneArray})` instead.
+- 1.1.0: 22 May 2022. `decode()` implemented
+- 1.0.0: 21 May 2023. `encode()` implemented
 
-13 Sep 2023
-
-- `insightTree().toggle(node)` expands/collapses a specific node
-- `insightTree().filter(filter)` expands/collapses the tree
-
-## 2.0.0
-
-17 Jun 2023
-
-- `insightTree().update({ level: n })` expands the tree to level n
-- `import "insighttree.js"` provides a bundled ESM script
-
-Backward-incompatible changes from 1.x:
-
-- Call `gramex.insightTree()`, not `gramex.insighttree.insightTree()`
-- Pass `insightTree(selector, options)`, not `insightTree({ selector, ...options })`
-- insighttree does not export a `format` object. Use `Intl.NumberFormat` instead
-
-## 1.1.0
-
-13 Jun 2023
-
-- `rankBy` supports column names with `+` and `-` prefixes.
+- 2.2.0: 8 Oct 2023. `insightTree().updateLeaf(n)` expands the tree to show only the top "deep" insight
+- 2.1.0: 13 Sep 2023.
+  - `insightTree().toggle(node)` expands/collapses a specific node
+  - `insightTree().filter(filter)` expands/collapses the tree
+- 2.0.0: 17 Jun 2023.
+  - `insightTree().update({ level: n })` expands the tree to level n
+  - `import "insighttree.js"` provides a bundled ESM script
+  - Backward-incompatible changes from 1.x:
+    - Call `gramex.insightTree()`, not `gramex.insighttree.insightTree()`
+    - Pass `insightTree(selector, options)`, not `insightTree({ selector, ...options })`
+    - insighttree does not export a `format` object. Use `Intl.NumberFormat` instead
+- 1.1.0: 13 Jun 2023. `rankBy` supports column names with `+` and `-` prefixes.
   E.g. `{ rankBy: "-fees" }` highlights the highest fees first, then the next highest, and so on.
+- 1.0.0: 6 Apr 2023. Initial release
 
-## 1.0.0
+## Authors
 
-6 Apr 2023
+Anand S <s.anand@gramener.com>
 
-- Initial release
+## License
+
+[MIT](https://spdx.org/licenses/MIT.html)
