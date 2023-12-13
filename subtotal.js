@@ -33,7 +33,7 @@ export function subtotal({
   groups,
   metrics,
   sort,
-  impact = undefined,
+  impact,
   rankBy = (v) => v[IMPACT] * v[SURPRISE],
   totalGroup = "Total",
 }) {
@@ -173,7 +173,7 @@ function flatten(tree, sorts) {
 }
 
 function sortableToFunction(column, name) {
-  if (!column) return () => 0;
+  if (column === undefined) return () => 0;
   else if (typeof column === "string") {
     if (column[0] === "-") {
       const col = column.slice(1);

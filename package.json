@@ -2,6 +2,7 @@
   "name": "@gramex/insighttree",
   "version": "3.0.0",
   "description": "Insight Tree breaks down a metric into a hierarchy (tree) and highlights the insights from that metric.",
+  "type": "module",
   "module": "dist/insighttree.js",
   "main": "dist/insighttree.min.js",
   "scripts": {

@@ -60,10 +60,15 @@ export function insightTree(
   render(el, { tree, selector, data, groups, metrics, sort, impact, rankBy, totalGroup });
   // Map nodes to tree and vice versa using data-insight-index="${i}" and [NODE]
   const nodes = el.querySelectorAll("[data-insight-level]");
-  for (let i = 0; i < tree.length; i++) {
-    tree[i][NODE] = nodes[i];
-    nodes[i].dataset.insightIndex = i;
-  }
+  if (nodes.length == tree.length)
+    for (let i = 0; i < tree.length; i++) {
+      tree[i][NODE] = nodes[i];
+      nodes[i].dataset.insightIndex = i;
+    }
+  else
+    console.error(
+      `insightTree: render() generated ${nodes.length} nodes with [data-insight-level]. Expected ${tree.length}`,
+    );
   // Listen to clicks and expand/collapse nodes
   el.addEventListener("click", (e) => {
     // Find the node that was clicked

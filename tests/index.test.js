@@ -1,7 +1,18 @@
 /**
  * @jest-environment jsdom
  */
-import { insightTree } from "../index.js";
+import {
+  insightTree,
+  CHILDREN,
+  DESCENDANT_COUNT,
+  GROUP,
+  IMPACT,
+  INDEX,
+  LEVEL,
+  // PARENT,
+  RANK,
+  SURPRISE,
+} from "../insighttree.js";
 import { data } from "./subtotal.test.js";
 
 describe("insightTree", () => {
@@ -10,17 +21,32 @@ describe("insightTree", () => {
       data,
       groups: ["a", "b"],
       metrics: ["x", "y"],
-      render: (el, tree) => {
+      render: (el, { tree }) => {
         expect(el.tagName).toEqual("BODY");
         expect(tree.length).toEqual(9);
-        for (const node of tree)
-          for (const property of ["_level", "_group", "_rank", "x", "y"]) expect(node).toHaveProperty(property);
+        for (const node of tree) {
+          expect(CHILDREN in node).toBeTruthy();
+          expect(DESCENDANT_COUNT in node).toBeTruthy();
+          expect(GROUP in node).toBeTruthy();
+          expect(IMPACT in node).toBeTruthy();
+          expect(INDEX in node).toBeTruthy();
+          expect(LEVEL in node).toBeTruthy();
+          // Parent need not be in the root node
+          // expect(PARENT in node).toBeTruthy();
+          expect(RANK in node).toBeTruthy();
+          expect(SURPRISE in node).toBeTruthy();
+          expect(node).toHaveProperty("x");
+          expect(node).toHaveProperty("y");
+        }
         expect(tree[0]).not.toHaveProperty("a");
         expect(tree[0]).not.toHaveProperty("b");
         expect(tree[1]).toHaveProperty("a");
         expect(tree[1]).not.toHaveProperty("b");
         expect(tree[1]).toHaveProperty("a");
         expect(tree[2]).toHaveProperty("b");
+        el.innerHTML = tree
+          .map((row) => /* html */ `<div data-insight-level="${row[LEVEL]}" data-insight-rank="${row[RANK]}"></div>`)
+          .join("");
       },
     });
   });
