@@ -1,18 +1,18 @@
-<link rel="stylesheet" href="../insighttree.css" />
+<link rel="stylesheet" href="../dist/insighttree.css" />
 <label for="id">Node #</label><input id="node" type="number" min="0" max="12" value="2" />
 <button type="button" id="collapse">Collapse</button>
 <button type="button" id="expand">Expand</button>
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
 
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
     metrics: ["sales", "target"],
-    rankBy: ({ sales, target }) => sales - target,
+    impact: ({ sales, target }) => sales - target,
   });
   const nodeId = document.querySelector("#node");
   // Clicking the "expand" button expands the chosen node number

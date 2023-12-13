@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../insighttree.css" />
+<link rel="stylesheet" href="../dist/insighttree.css" />
 <style>
   .insight-current { background-color: gold; }
   .insight-highlight { font-weight: normal; color: red; }
@@ -8,14 +8,14 @@
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
 
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
     metrics: ["sales", "target"],
-    rankBy: ({ sales, target }) => sales - target,
+    impact: ({ sales, target }) => sales - target,
   });
   // Show top 4 insights
   tree.update({ rank: 4 });

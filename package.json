@@ -1,25 +1,23 @@
 {
   "name": "@gramex/insighttree",
   "version": "2.2.0",
-  "description": "The Insight Tree component breaks down a metric into a hierarchy (tree) and highlights the biggest drivers of that metric.",
-  "type": "module",
-  "module": "insighttree.js",
-  "browser": "insighttree.min.js",
+  "description": "Insight Tree breaks down a metric into a hierarchy (tree) and highlights the insights from that metric.",
+  "module": "dist/insighttree.js",
+  "main": "dist/insighttree.min.js",
   "scripts": {
-    "lint": "npx prettier --write index.js subtotal.js package.json '*.{css,yaml,md}' '{docs,app,tests}/*.{js,css,md}'",
-    "watch": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js --watch",
-    "build-browser": "esbuild index.js --format=iife --global-name=gramex --bundle --sourcemap --minify --outfile=insighttree.min.js",
-    "build-esm": "esbuild index.js --format=esm --bundle --minify --allow-overwrite --sourcemap --outfile=insighttree.js",
+    "docs": "documentation build insighttree.js --markdown-toc false -f md | prettier --parser markdown > docs/api.md",
+    "lint": "prettier --write '**/*.{js,mjs,ts,md,json}' && eslint",
+    "watch": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist --watch",
+    "build-browser": "esbuild insighttree.js insighttree.css --format=iife --global-name=gramex --bundle --sourcemap --minify --outdir=dist",
+    "build-esm": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist",
     "build": "npm run build-browser && npm run build-esm",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run lint && npm run build",
     "pretest": "npm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "files": [
     "README.md",
-    "index.js",
-    "subtotal.js",
-    "insighttree.*"
+    "dist/*"
   ],
   "repository": {
     "type": "git",
@@ -33,8 +31,9 @@
     "gramex",
     "component"
   ],
-  "author": "S Anand <root.node@gmail.com>",
+  "author": "S Anand <s.anand@gramener.com>",
   "contributors": [
+    "Aayush Thakur <aayush.thakur@gramener.com>",
     "Chandana Sagar <chandana.sagar@gramener.com>"
   ],
   "license": "MIT",
@@ -45,11 +44,12 @@
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "homepage": "https://gramener.com/insighttree/",
+  "homepage": "https://gramener.com/gramex-insighttree/",
   "prettier": {
     "printWidth": 120
   },
   "devDependencies": {
+    "documentation": "^14.0.2",
     "esbuild": "^0.17.12",
     "eslint": "^8.37.0",
     "eslint-plugin-html": "^7.1.0",

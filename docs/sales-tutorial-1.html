@@ -1,8 +1,8 @@
-<link rel="stylesheet" href="../insighttree.css" />
+<link rel="stylesheet" href="../dist/insighttree.css" />
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
 
   const tree = insightTree(".sales-tree", {
@@ -11,9 +11,9 @@
     groups: ["city", "product", "channel"],
     // Calculate the total of sales and target
     metrics: ["sales", "target"],
-    // Rank insights by where the sales missed the target the most
-    rankBy: ({ sales, target }) => sales - target,
+    // Measure impact of the sales vs target gap
+    impact: ({ sales, target }) => target - sales
   });
-  // Show top 4 insights
-  tree.update({ rank: 4 });
+  // Show top 3 insights
+  tree.update({ rank: 3 });
 </script>

@@ -2,11 +2,13 @@
 import { dsvFormat } from "https://cdn.skypack.dev/d3-dsv@3";
 import { scaleLinear } from "https://cdn.skypack.dev/d3-scale@4";
 import { hcl } from "https://cdn.skypack.dev/d3-color@3";
-import { insightTree } from "../index.js";
-import { num } from "https://cdn.jsdelivr.net/npm/@gramex/ui/dist/format.js";
+import { insightTree, LEVEL, RANK, GROUP, IMPACT, SURPRISE } from "../dist/insighttree.js";
+import { num, pc } from "https://cdn.jsdelivr.net/npm/@gramex/ui/dist/format.js";
 
 const $data = document.querySelector("#data");
 const $slider = document.querySelector("#slider");
+const $showDeepInsights = document.querySelector("#show-deep-insights");
+let pauseRenderTree = false;
 
 // Clicking a page tab updates the hash
 document.querySelector("body").addEventListener("shown.bs.tab", (event) => {
@@ -50,12 +52,13 @@ $data.addEventListener("change", (event) => {
 
 const groupsSelect = new TomSelect("#groups", { selectOnTab: true });
 const metricsSelect = new TomSelect("#metrics", { selectOnTab: true });
-const rankbySelect = new TomSelect("#rankby", { selectOnTab: true });
+const impactSelect = new TomSelect("#impact", { selectOnTab: true });
 const sortbySelect = new TomSelect("#sortby", { selectOnTab: true });
 let tree, data;
 
 // When #data value changes, parse the data
 $data.addEventListener("change", (event) => {
+  pauseRenderTree = true;
   // If the first line contains a tab, assume it's a TSV. Otherwise, assume it's a CSV.
   const firstLine = event.target.value.split("\n")[0];
   const format = dsvFormat(firstLine.includes("\t") ? "\t" : ",");
@@ -79,43 +82,50 @@ $data.addEventListener("change", (event) => {
     select.addOption(values.map((val) => ({ value: val, text: val })));
     select.setValue(values);
   }
-  for (const select of [rankbySelect, sortbySelect]) {
+  for (const select of [impactSelect, sortbySelect]) {
     select.clear();
     select.clearOptions();
     select.addOption(data.metrics.map((val) => ({ value: val, text: val })));
     select.setValue(data.metrics.at(-1));
   }
+  pauseRenderTree = false;
+  renderTree();
 });
 
-document.querySelector("#insight-tree-controls").addEventListener("change", () => {
-  const rankBy = rankbySelect.getValue();
+document.querySelector("#insight-tree-controls").addEventListener("change", renderTree);
+
+function renderTree() {
+  if (pauseRenderTree) return;
+  const impact = impactSelect.getValue();
   const sortBy = sortbySelect.getValue();
-  const rankByDescending = document.querySelector("#rankby-descending").checked;
+  const impactDescending = document.querySelector("#impact-descending").checked;
   const sortByDescending = document.querySelector("#sortby-descending").checked;
   tree = insightTree(".insight-tree", {
     data: data,
     groups: groupsSelect.getValue(),
     metrics: metricsSelect.getValue(),
-    rankBy: rankByDescending ? `-${rankBy}` : rankBy,
+    impact: impactDescending ? `-${impact}` : impact,
     sort: `${sortByDescending ? "-" : "+"}${sortBy}`,
     render: insightTreeRender,
-    extra: [rankBy, rankByDescending],
+    extra: [impact, impactDescending],
   });
-  // Show only top 4 insights
-  tree.update({ rank: +$slider.value });
-});
+  updateTreeSlider();
+}
 
-$slider.addEventListener("input", (e) => {
-  tree.update({ rank: e.target.value });
-});
+function updateTreeSlider() {
+  if ($showDeepInsights.checked) tree.updateLeaf(+$slider.value);
+  else tree.update({ rank: +$slider.value });
+}
 
-const insightTreeRender = (el, tree, { metrics }) => {
-  const rankBy = rankbySelect.getValue();
-  const rankByDescending = document.querySelector("#rankby-descending").checked;
-  const rankByValues = tree.map((d) => d[rankBy]).sort();
+$slider.addEventListener("input", updateTreeSlider);
+
+const insightTreeRender = (el, { tree, metrics }) => {
+  const impact = impactSelect.getValue();
+  const impactDescending = document.querySelector("#impact-descending").checked;
+  const impactValues = tree.map((d) => d[impact]).sort();
   const color = scaleLinear()
-    .domain([Math.min(...rankByValues), rankByValues[Math.floor(rankByValues.length / 2)], Math.max(...rankByValues)])
-    .range(rankByDescending ? ["green", "yellow", "red"] : ["red", "yellow", "green"]);
+    .domain([Math.min(...impactValues), impactValues[Math.floor(impactValues.length / 2)], Math.max(...impactValues)])
+    .range(impactDescending ? ["green", "yellow", "red"] : ["red", "yellow", "green"]);
   el.innerHTML = /* html */ `
   <table class="table table-sm w-auto">
     <thead>
@@ -125,26 +135,28 @@ const insightTreeRender = (el, tree, { metrics }) => {
         ${metrics
           .map(
             (metric) => /* html */ `
-          <th class="text-end ${metric == rankBy ? "bg-warning" : ""}">${metric}</th>
+          <th class="text-end ${metric == impact ? "bg-warning" : ""}">${metric}</th>
         `,
           )
           .join("")}
+          <th title="How unusual or hard is it to find this insight?">surprise</th>
+          <th title="How much does this impact the ranked metric?">impact</th>
       </tr>
     </thead>
     <tbody>
       ${tree
         .map(
-          ({ _level, _rank, _group, ...rest }) => /* html */ `
-        <tr data-insight-level="${_level}" data-insight-rank="${_rank}">
-          <td class="text-end">#${_rank}</th>
-          <td style="padding-left:${_level * 1.5}rem">
-            <span class="insight-toggle"></span> ${_group}
+          (rest) => /* html */ `
+        <tr data-insight-level="${rest[LEVEL]}" data-insight-rank="${rest[RANK]}">
+          <td class="text-end">#${rest[RANK]}</th>
+          <td style="padding-left:${rest[LEVEL] * 1.5}rem">
+            <span class="insight-toggle"></span> ${rest[GROUP]}
           </td>
           ${metrics
             .map((metric) => {
               const val = rest[metric];
               let style = "";
-              if (metric == rankBy) {
+              if (metric == impact) {
                 const bg = color(val);
                 const fg = hcl(bg).l > 55 ? "black" : "white";
                 style = `style="background-color:${bg};color:${fg}"`;
@@ -152,6 +164,8 @@ const insightTreeRender = (el, tree, { metrics }) => {
               return /* html */ `<td class="text-end" ${style}>${num(val)}</td>`;
             })
             .join("")}
+            <td class="text-end small text-secondary">${pc(rest[SURPRISE])}</td>
+            <td class="text-end small text-secondary">${pc(rest[IMPACT])}</td>
         </tr>`,
         )
         .join("")}

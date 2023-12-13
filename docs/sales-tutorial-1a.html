@@ -1,16 +1,16 @@
-<link rel="stylesheet" href="../insighttree.css" />
+<link rel="stylesheet" href="../dist/insighttree.css" />
 <input id="level" type="range" min="0" max="3" value="1" />
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
 
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
     metrics: ["sales", "target"],
-    rankBy: ({ sales, target }) => sales - target,
+    impact: ({ sales, target }) => sales - target,
   });
   // Expand to level 1
   tree.update({ level: 1 });

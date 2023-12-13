@@ -1,16 +1,16 @@
-<link rel="stylesheet" href="../insighttree.css" />
+<link rel="stylesheet" href="../dist/insighttree.css" />
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree, LEVEL, GROUP } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
 
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
     metrics: ["sales", "target"],
-    rankBy: ({ sales, target }) => sales - target,
+    impact: ({ sales, target }) => sales - target,
   });
   // Expand all rows of level 0, and any row with the group "Bonn".
-  tree.filter((row) => row._level <= 0 || row._group == 'Bonn')
+  tree.show((row) => row[LEVEL] <= 0 || row[GROUP] == 'Bonn')
 </script>

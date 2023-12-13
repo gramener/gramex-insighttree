@@ -19,3 +19,11 @@ footer {
   --bs-tertiary-bg: #cce5ff;
   --bs-tertiary-bg-rgb: rgb(204, 229, 255);
 }
+
+.insight-tree td {
+  white-space: nowrap;
+}
+
+.insight-current td {
+  background-color: inherit !important;
+}

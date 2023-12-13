@@ -1,3 +1,15 @@
+export const CHILDREN = Symbol("CHILDREN");
+export const DESCENDANT_COUNT = Symbol("DESCENDANT_COUNT");
+export const GROUP = Symbol("GROUP");
+export const IMPACT = Symbol("IMPACT");
+export const INDEX = Symbol("INDEX");
+export const LEVEL = Symbol("LEVEL");
+export const PARENT = Symbol("PARENT");
+export const RANK = Symbol("RANK");
+export const SURPRISE = Symbol("SURPRISE");
+const VISIT_ORDER = Symbol("VISIT_ORDER");
+const IMPACT_RANK = Symbol("IMPACT_RANK");
+
 /**
  * Calculates a hierarchical tree structure based on the provided data and configuration.
  *
@@ -7,14 +19,23 @@
  * @param {(string[]|Object)} options.groups - ['col', ...] or {col: row => ...} defines the hierarchy levels of the tree.
  * @param {(string[]|Object)} options.metrics - ['col', ...] or {col: 'sum', col: d => ...} specifies the metrics to aggregate.
  * @param {string|Object} [options.sort] - '+col', '-col', or {col1: '-col2', ...} defines the sorting criteria for each level.
- * @param {string|function} [options.rankBy] - '+col', '-col', or d => ... specifies the metric to rank insights by.
- * @param {string} [options.totalGroup="Total"] - Name of the total row's `_group`.
+ * @param {string|function} [options.impact] - '+col', '-col', or d => ... specifies the impact metric to rank insights by.
+ * @param {string|function} [options.rankBy] - '+col', '-col', or d => ... specifies the metric to traverse insights by.
+ * @param {string} [options.totalGroup="Total"] - Name of the total row's `GROUP`.
  *
  * @returns {Object[]} - Returns an array of objects representing the calculated tree structure.
  *
- * @throws {Error} Throws an error for invalid `groups`, `metrics`, `sort`, or `rankBy` configurations.
+ * @throws {Error} Throws an error for invalid `groups`, `metrics`, `sort`, or `impact` configurations.
  */
-export function subtotal({ data, groups, metrics, sort, rankBy = undefined, totalGroup = "Total" }) {
+export function subtotal({
+  data,
+  groups,
+  metrics,
+  sort,
+  impact = undefined,
+  rankBy = (v) => v[IMPACT] * v[SURPRISE],
+  totalGroup = "Total",
+}) {
   if (typeof groups != "object" || groups === null)
     throw new Error(`groups must be ['col', ...] or {col: row => ...}, not ${groups}`);
   // Convert array of strings [x, y, z] into object {x: x, y: y, z: z}
@@ -49,20 +70,9 @@ export function subtotal({ data, groups, metrics, sort, rankBy = undefined, tota
     )
     .map((order) => (order ? (a, b) => order(a.metrics, b.metrics) : order));
 
-  // Convert rankBy to a function that returns a number that's sortable
-  if (rankBy === undefined) rankBy = () => 0;
-  else if (typeof rankBy == "string") {
-    if (rankBy[0] == "-") {
-      const rankByCol = rankBy.slice(1);
-      rankBy = (d) => -d[rankByCol];
-    } else if (rankBy[0] == "+") {
-      const rankByCol = rankBy.slice(1);
-      rankBy = (d) => d[rankByCol];
-    } else {
-      const rankByCol = rankBy;
-      rankBy = (d) => d[rankByCol];
-    }
-  } else if (typeof rankBy !== "function") throw new Error(`rankBy must be a '+col', '-col', d => ..., not ${rankBy}`);
+  // Convert impact to a function that returns a number that's sortable
+  impact = sortableToFunction(impact);
+  rankBy = sortableToFunction(rankBy);
 
   // Return { metric: fn(data) } for based on each metric's function
   function reduce(data, context) {
@@ -71,24 +81,35 @@ export function subtotal({ data, groups, metrics, sort, rankBy = undefined, tota
     return result;
   }
 
-  const tree = nest(data, groupNames, groupValues, reduce, { _group: totalGroup });
+  const tree = nest(data, groupNames, groupValues, reduce, { [GROUP]: totalGroup });
   const result = flatten(tree, sorts);
   result
-    .map((v) => [rankBy(v), v])
+    .map((v) => [impact(v), v])
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
-    .forEach(([, v], i) => (v._rank = i + 1));
+    .forEach(([val, v], i) => (v[IMPACT_RANK] = i + 1) && (v[IMPACT] = val));
   // Add visit order via rank-based traversal
   function traverseTree(pendingList, visitOrder = 0) {
     while (pendingList.length) {
       const node = pendingList.shift();
-      node.metrics._visitOrder = visitOrder++;
+      node.metrics[VISIT_ORDER] = visitOrder++;
       if (node.children) {
         pendingList = pendingList.concat(Array.from(node.children.values()));
-        pendingList.sort((a, b) => a.metrics._rank - b.metrics._rank);
+        pendingList.sort((a, b) => a.metrics[IMPACT_RANK] - b.metrics[IMPACT_RANK]);
       }
     }
   }
   traverseTree([tree]);
+  const minImpact = Math.min(...result.map((v) => v[IMPACT]));
+  const maxImpact = Math.max(...result.map((v) => v[IMPACT]));
+  result.forEach((v) => {
+    v[IMPACT] = (v[IMPACT] - minImpact) / (maxImpact - minImpact);
+    v[SURPRISE] = v[VISIT_ORDER] / result.length;
+  });
+  result
+    .map((v) => [rankBy(v), v])
+    .sort((a, b) => b[0] - a[0])
+    .forEach(([, v], i) => (v[RANK] = i + 1));
+  result.forEach((v, i) => (v[INDEX] = i));
   return result;
 }
 
@@ -100,7 +121,7 @@ export function subtotal({ data, groups, metrics, sort, rankBy = undefined, tota
 //    tree = {label: {metrics: {}, children: {label: ...}}
 function nest(data, groupNames, groupValues, reduce, context = {}) {
   return (function regroup(data, i) {
-    context._level = i;
+    context[LEVEL] = i;
     const metrics = reduce(data, context);
     if (i >= groupValues.length) return { metrics };
     const children = new Map();
@@ -114,7 +135,7 @@ function nest(data, groupNames, groupValues, reduce, context = {}) {
       else children.set(key, [value]);
     }
     for (const [key, data] of children) {
-      context[groupName] = context._group = key;
+      context[groupName] = context[GROUP] = key;
       children.set(key, regroup(data, i));
       delete context[groupName];
     }
@@ -122,13 +143,50 @@ function nest(data, groupNames, groupValues, reduce, context = {}) {
   })(data, 0);
 }
 
+/**
+ * Flattens a tree structure into an array, while applying sorting rules to each level.
+ * @param {Object} tree - The tree structure to flatten.
+ * @param {Array<Function>} sorts - An array of sorting functions to apply at each level of the tree.
+ * @returns {Array} - The flattened array.
+ */
 function flatten(tree, sorts) {
   const result = [tree.metrics];
   const childTrees = [...(tree.children || [])].map(([, v]) => v);
-  const level = tree.metrics._level;
+  const level = tree.metrics[LEVEL];
+  // Each node gets CHILDREN (list of direct children) and DESCENDANT_COUNT
+  tree.metrics[CHILDREN] = childTrees;
+  // DESCENDANT_COUNT = size of added flattened tree = newSize - currentSize
+  // Here, we set DESCENDANT_COUNT to -currentSize and later add +newSize
+  tree.metrics[DESCENDANT_COUNT] = -result.length;
+  // Sort the subtree based on the level-specific sort before flattening
   if (sorts[level]) childTrees.sort(sorts[level]);
-  for (const subtree of childTrees) result.push(...flatten(subtree, sorts));
+  // Append the flattened subtree
+  for (const subtree of childTrees) {
+    subtree.metrics[PARENT] = tree.metrics;
+    result.push(...flatten(subtree, sorts));
+  }
+  // Update DESCENDANT_COUNT to the size
+  tree.metrics[DESCENDANT_COUNT] += result.length;
   return result;
+}
+
+function sortableToFunction(column, name) {
+  if (!column) return () => 0;
+  else if (typeof column === "string") {
+    if (column[0] === "-") {
+      const col = column.slice(1);
+      return (d) => -d[col];
+    } else if (column[0] === "+") {
+      const col = column.slice(1);
+      return (d) => d[col];
+    } else {
+      return (d) => d[column];
+    }
+  } else if (typeof column === "function") {
+    return column;
+  } else {
+    throw new Error(`${name} must be a '+col', '-col', d => ..., not ${column}`);
+  }
 }
 
 export const agg = {

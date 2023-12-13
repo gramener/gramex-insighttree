@@ -8,5 +8,6 @@ deploy:
   only: [master, dev]
   variables:
     SERVER: gramener.com
-    URL: insighttree
+    URL: gramex-insighttree
     VERSION: static
+    SETUP: npm install && npm run build

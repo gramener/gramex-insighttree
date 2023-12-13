@@ -1,16 +1,16 @@
-<link rel="stylesheet" href="../insighttree.css" />
-<input id="rank" type="range" min="1" max="12" value="0" />
+<link rel="stylesheet" href="../dist/insighttree.css" />
+<input id="rank" type="range" min="1" max="200" value="0" />
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
 
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
     metrics: ["sales", "target"],
-    rankBy: ({ sales, target }) => sales - target,
+    impact: ({ sales, target }) => sales - target,
   });
   // Show top deep insight
   tree.updateLeaf(0);

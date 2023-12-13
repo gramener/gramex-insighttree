@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="../insighttree.css">
+<link rel="stylesheet" href="../dist/insighttree.css">
 <style>
   .insight-current { background-color: gold; }
   .insight-highlight { font-weight: normal; color: red; }
@@ -8,24 +8,24 @@
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../index.js";
+  import { insightTree, LEVEL, RANK, GROUP } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then(r => r.json())
 
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
     metrics: ["sales", "target"],
-    rankBy: ({ sales, target }) => sales - target,
+    impact: ({ sales, target }) => sales - target,
     // Render as a table
-    render: (el, tree) => el.innerHTML = /* html */ `
+    render: (el, { tree }) => el.innerHTML = /* html */ `
       <table>
         <thead><tr><th>#</th><th>Group</th><th>Gap</th><th>Sales</th><th>Target</th></tr></thead>
         <tbody>
-          ${tree.map(({ _level, _rank, _group, sales, target }) => /* html */ `
-            <tr data-insight-level="${_level}" data-insight-rank="${_rank}">
-              <td class="text-end">#${_rank}</th>
-              <td style="padding-left:${_level * 1.5}rem">
-                <span class="insight-toggle"></span> ${_group}
+          ${tree.map(({ sales, target, ...row }) => /* html */ `
+            <tr data-insight-level="${row[LEVEL]}" data-insight-rank="${row[RANK]}">
+              <td class="text-end">#${row[RANK]}</th>
+              <td style="padding-left:${row[LEVEL] * 1.5}rem">
+                <span class="insight-toggle"></span> ${row[GROUP]}
               </td>
               <td class="text-end">${sales - target}</td>
               <td class="text-end">${sales}</td>
