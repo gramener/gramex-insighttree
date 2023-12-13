@@ -1,0 +1,31 @@
+<div id="root"></div>
+
+<link rel="stylesheet" href="../dist/insighttree.css" />
+<script src="https://cdn.jsdelivr.net/npm/react/umd/react.development.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom/umd/react-dom.development.js"></script>
+<script type="module">
+  /* globals React, ReactDOM */
+  import { insightTree } from "../dist/insighttree.js";
+  const { useEffect } = React;
+
+  const data = await fetch("sales-data.json").then((r) => r.json());
+  function App() {
+    useEffect(() => {
+      const tree = insightTree("#sales-tree", {
+        data: data,
+        // Group the data by city, then product, then channel
+        groups: ["city", "product", "channel"],
+        // Calculate the total of sales and target
+        metrics: ["sales", "target"],
+        // Measure impact of the sales vs target gap
+        impact: ({ sales, target }) => target - sales,
+      });
+      // Show top 3 insights
+      tree.update({ rank: 3 });
+    }, []);
+
+    return React.createElement("div", { id: "sales-tree" });
+  }
+  const root = ReactDOM.createRoot(document.querySelector("#root"));
+  root.render(React.createElement(React.StrictMode, null, React.createElement(App)));
+</script>

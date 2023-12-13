@@ -301,6 +301,24 @@ For example, to render the tree as a table, add this just after `impact: ...`
 - Indent based on `row[LEVEL]`
 - Add a `<span class="insight-toggle"></span>` inside the row to show the expand / collapse icon
 
+## React usage
+
+Use the following pattern when using `network()`` with React:
+
+```js
+const { useEffect } = React;
+function App() {
+  useEffect(() => insightTree("#tree", { ... }), []);
+  return React.createElement("div", { id: "#tree" });
+}
+const root = ReactDOM.createRoot(document.querySelector("#root"));
+root.render(React.createElement(React.StrictMode, null, React.createElement(App)));
+```
+
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/master/docs/sales-tree.png)](docs/sales-react.html ":include :type=html height=250px")
+
+[Source code](docs/sales-react.html ":include :type=code")
+
 ## Integrating with other libraries
 
 When rendering the tree, you can use any JavaScript function, including from libraries like d3 or Bootstrap.
