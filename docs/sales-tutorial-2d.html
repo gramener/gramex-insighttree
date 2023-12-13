@@ -1,9 +1,8 @@
 <link rel="stylesheet" href="../dist/insighttree.css" />
-<input id="level" type="range" min="0" max="3" value="1" />
 <div class="sales-tree"></div>
 
 <script type="module">
-  import { insightTree } from "../dist/insighttree.js";
+  import { insightTree, LEVEL, GROUP } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
   const tree = insightTree(".sales-tree", {
     data: data,
@@ -11,9 +10,6 @@
     metrics: ["sales", "target"],
     impact: ({ sales, target }) => sales - target,
   });
-  // Expand to level 1
-  tree.update({ level: 1 });
-  document.querySelector("#level").addEventListener("input", (e) => {
-    tree.update({ level: e.target.value });
-  });
+
+  tree.classed('insight-current', (row) => row[LEVEL] == 0 || row[GROUP] == 'Clock')
 </script>

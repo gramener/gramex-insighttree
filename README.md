@@ -65,8 +65,11 @@ Use via CDN as a script:
 
 ## Data structure
 
-`insightTree()` needs an array of objects with at least 1 variable to group by
-(e.g. `country`, `product`, `channel`) and at least 1 metric to sum (e.g. `sales`, `target`).
+`insightTree()` needs an array of objects with
+
+1. At least 1 variable to group by (e.g. `country`, `product`, `channel`)
+2. At least 1 metric to sum (e.g. `sales`, `target`).
+
 For example:
 
 [sales-data.json](docs/sales-data.json ":ignore")
@@ -91,28 +94,33 @@ Output:
 
 This tree explores the City > Product > Channel hierarchy for the biggest insight, based on:
 
-1. Impact: As defined by the `sales - target` gap
-2. Surprise: How "hidden" is it below a low impact
+1. **Impact**: As defined by the `sales - target` gap
+2. **Surprise**: How "hidden" is it? That is, if you visited the highest impact node, then the next highest in the tree, and so on, how long would it take to find this node?
 
-It shows the insight rank of each node. `#1` has the highest impact x surprise. `#2` is the next, and so on.
+It shows the insight rank of each node. `#1` has the highest **Impact x Surprise**. `#2` is the next, and so on.
 
-Click any row to expand or collapse it
+Click any row to expand or collapse it.
 
 ## Tree data structure
 
-`insightTree()` returns an object with a `.data` property.
+`insightTree()` returns an object with a `.tree` property.
 This is an array of objects, one for each row of the tree to render. The object keys are:
 
 - All groups, e.g. `city`, `product`, `channel`
 - All metrics, e.g. `sales`, `target`
-- Additional Symbol keys that you can `import { CHILDREN, DESCENDANT_COUNT, GROUP, IMPACT, LEVEL, RANK, SURPRISE } from ...`
+- Additional Symbol keys that you can `import { CHILDREN, DESCENDANT_COUNT, GROUP, IMPACT, LEVEL, RANK, SURPRISE }`
   - `[CHILDREN]`: array of child nodes
   - `[DESCENDANT_COUNT]`: number of descendants
   - `[GROUP]`: current group value. For `row[LEVEL] == 1`, this is the `city`, for `row[LEVEL] == 2`, this is the `product`, etc.
+  - `INDEX`: index of the node in the data (e.g. 0, 1, 2, ...)
   - `[IMPACT]`: normalized value of the `impact` metric. 1 indicates the highest value, 0 indicates the lowest value.
-  - `[LEVEL]`: level of indentation
+  - `[LEVEL]`: level of indentation. 0 is the root node, 1 is the first child, 2 is the second child, etc.
+  - `[PARENT]`: link to parent element. `undefined` for the root node.
   - `[RANK]`: rank of the insight (`row[SURPRISE] * row[IMPACT]`). The highest ranked insight is the most surprising and impactful.
   - `[SURPRISE]`: how surprising is the value of this node (0-100%). 0% indicates you would have found this node immediately traversing by rank. 100% indicates it is the last node you would have found.
+  - `[NODE]`: the DOM node for the row. This is `undefined` until the tree is rendered.
+  - `[OPEN]`: whether the node is open (shows children) or closed. This is `undefined` until the tree is rendered.
+  - `[SHOWN]`: whether the node is shown or hidden. This is `undefined` until the tree is rendered.
 
 ## Expand or collapse levels
 
@@ -128,7 +136,7 @@ Move the slider to show more or fewer levels.
 
 Call `tree.update({ rank: 4 })` to show the top 4 insights.
 
-[![Tutorial - 2](docs/sales-tutorial-2.gif)](docs/sales-tutorial-2.html ":include :type=html height=200px")
+[![Tutorial - 2](docs/sales-tutorial-2.gif)](docs/sales-tutorial-2.html ":include :type=html height=400px")
 
 This tree:
 
@@ -145,15 +153,7 @@ Call `tree.updateLeaf(1)` to show first top "deep" insight (i.e. at the deepest 
 
 Move the slider to show the next or previous deep insight - highlighted in orange.
 
-## Expand or collapse nodes
-
-Call `tree.toggle(node, true)` to expand a specific node. `.toggle(node, false)` collapses it. `.toggle(node)` toggles it.
-
-[![Tutorial - 2a](docs/sales-tutorial-2a.gif)](docs/sales-tutorial-2a.html ":include :type=html height=200px")
-
-[Source code](docs/sales-tutorial-2a.html ":include :type=code")
-
-## Expand or collapse the tree
+## Show or hide nodes
 
 Call `tree.show((row, node) => ...)` to expand or collapse each node in the tree based on a rule.
 
@@ -162,11 +162,48 @@ It accepts a function that returns `true` to expand the node, `false` to collaps
 1. `row`: an object containing all group keys and metrics for the row
 2. `node`: the DOM node for the row
 
-For example, `tree.show((row) => row[LEVEL] == 0 || row[GROUP] == 'Bonn')` to expand all rows of level 0, and any row with the group "Bonn".
+For example, `tree.show((row) => row[LEVEL] == 0 || row[GROUP] == 'Clock')` to expand all rows of level 0, and any row with the group "Bonn".
 
 [![Tutorial - 2b](docs/sales-tutorial-2b.png)](docs/sales-tutorial-2b.html ":include :type=html height=200px")
 
 [Source code](docs/sales-tutorial-2b.html ":include :type=code")
+
+`tree.show((row, node) => ..., options)` accepts a second `options` parameter:
+
+- `openAncestors`: if `true`, opens all ancestors of the matched nodes. Default: `true`
+- `showSiblings`: if `true`, shows all siblings of the matched nodes. Default: `false`
+- `hiddenClass`: class to add to hidden nodes. Default: `"insight-hidden"`
+- `closedClass`: class to add to closed nodes. Default: `"insight-closed"`
+
+For example, `tree.show((row) => row.city == 'Bonn' && row.product == 'Clock' && row[LEVEL] == 2, { showSiblings: true })` to show all Bonn Clock sales and its siblings.
+
+[![Tutorial - 2e](docs/sales-tutorial-2e.png)](docs/sales-tutorial-2e.html ":include :type=html height=200px")
+
+[Source code](docs/sales-tutorial-2e.html ":include :type=code")
+
+
+## Expand or collapse nodes
+
+Call `tree.toggle(node, true)` to expand a specific node. `.toggle(node, false)` collapses it. `.toggle(node)` toggles it.
+
+**Note**: This does *NOT* automatically open or show the ancestors. Use [`show()`](#show-or-hide-nodes) for that.
+
+[![Tutorial - 2a](docs/sales-tutorial-2a.gif)](docs/sales-tutorial-2a.html ":include :type=html height=200px")
+
+[Source code](docs/sales-tutorial-2a.html ":include :type=code")
+
+## Update classes
+
+Call `tree.classed(cls, (row, node) => ...)` to add or remove a class to each node in the tree based on a rule.
+
+It accepts a function that returns `true` to add the class, `false` to remove it. It takes 2 parameters:
+
+1. `row`: an object containing all group keys and metrics for the row
+2. `node`: the DOM node for the row
+
+For example, `tree.classed('insight-current', (row) => row[LEVEL] == 0 || row[GROUP] == 'Clock')` to highlight all rows of level 0, and any row with the group "Clock".
+
+[![Tutorial - 2d](docs/sales-tutorial-2d.png)](docs/sales-tutorial-2d.html ":include :type=html height=200px")
 
 ## Style the tree
 
@@ -208,7 +245,7 @@ Download [arrow.svg](docs/arrow.svg ":ignore") to the same folder and add this b
 
 ## Render custom trees
 
-[`insightTree()`](#api) accepts a `render(el, tree)` function. This can be used to render the tree in any way.
+[`insightTree()`](#api) accepts a `render(el, { tree })` function. This can be used to render the tree in any way.
 
 For example, to render the tree as a table, add this just after `impact: ...`
 
@@ -235,15 +272,9 @@ For example, to render the tree as a table, add this just after `impact: ...`
 
 [Source code](docs/sales-tutorial-4.html ":include :type=code")
 
-The `render()` function is passed the element `el` and tree `tree`. The tree is an array of objects:
+`render(el, options)` function is called with the same options as [`insightTree()`](#api), i.e. `{ data, groups, metrics, sort, impact, rankBy, totalGroup }`.
 
-```js
-[
-  { [LEVEL]: 0, [RANK]: 1, [GROUP]: "Total", ..., sales: 5143, target: 5491 },
-  { [LEVEL]: 1, [RANK]: 23, [GROUP]: "Aden", ..., city: "Aden", sales: 625, target: 653 },
-  // ...
-];
-```
+`options` also is passed `{ tree }` which is the [tree data structure](#tree-data-structure).
 
 **REMEMBER**:
 
@@ -439,9 +470,14 @@ It returns a `tree` object has the following methods:
 
 ## Release notes
 
-- 3.0.0:
+- 3.0.0: 13 Dec 2023. Rewrite with more flexible API.
+  - `.show()` and `.classed()` introduced
+  - `_xxx` properties renamed to `[xxx]` symbols to avoid conflict
+  - Add new properties: `SURPRISE`, `CHILDREN`, `PARENT`, `DESCENDANT_COUNT`, `NODE`, `OPEN`, `SHOWN`
+  - Add `showSiblings` option to `.show()` to show siblings of matched nodes
   - Backward incompatible changes from 2.x
     - Instead of `.filter(fn)`, use `.show(fn, { openAncestors: false })`
+    - `insighttree().data` renamed to `insighttree().tree`
     - `rankBy` renamed to `impact`
     - Default rank order is `SURPRISE * IMPACT` not `rankBy`
     - `render(el, tree, { ...options })` is now replaced with `render(el, { tree, ...options })`

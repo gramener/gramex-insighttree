@@ -147,39 +147,6 @@ update(treeData, { rank: 3, level: 2 }, { showSiblings: true });
 
 Returns **[insightTree][8]** Returns the insightTree object.
 
-## subtotal
-
-Calculates a hierarchical tree structure based on the provided data and configuration.
-
-### Parameters
-
-- `options` **[Object][2]** Configuration for the tree calculation.
-
-  - `options.data` **[Array][3]<[Object][2]>** An array of objects representing the data rows.
-  - `options.groups` **([Array][3]<[string][1]> | [Object][2])** \['col', ...] or {col: row => ...} defines the hierarchy levels of the tree.
-  - `options.metrics` **([Array][3]<[string][1]> | [Object][2])** \['col', ...] or {col: 'sum', col: d => ...} specifies the metrics to aggregate.
-  - `options.sort` **([string][1] | [Object][2])?** '+col', '-col', or {col1: '-col2', ...} defines the sorting criteria for each level.
-  - `options.impact` **([string][1] | [function][4])?** '+col', '-col', or d => ... specifies the impact metric to rank insights by. (optional, default `undefined`)
-  - `options.rankBy` **([string][1] | [function][4])?** '+col', '-col', or d => ... specifies the metric to traverse insights by. (optional, default `v=>v[IMPACT]*v[SURPRISE]`)
-  - `options.totalGroup` **[string][1]** Name of the total row's `GROUP`. (optional, default `"Total"`)
-
-<!---->
-
-- Throws **[Error][5]** Throws an error for invalid `groups`, `metrics`, `sort`, or `impact` configurations.
-
-Returns **[Array][3]<[Object][2]>** Returns an array of objects representing the calculated tree structure.
-
-## flatten
-
-Flattens a tree structure into an array, while applying sorting rules to each level.
-
-### Parameters
-
-- `tree` **[Object][2]** The tree structure to flatten.
-- `sorts` **[Array][3]<[Function][4]>** An array of sorting functions to apply at each level of the tree.
-
-Returns **[Array][3]** The flattened array.
-
 [1]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 [2]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object
 [3]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array

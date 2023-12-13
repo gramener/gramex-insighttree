@@ -2,6 +2,8 @@ export { CHILDREN, DESCENDANT_COUNT } from "./subtotal.js";
 import { subtotal, GROUP, IMPACT, INDEX, LEVEL, PARENT, RANK, SURPRISE } from "./subtotal.js";
 export { GROUP, IMPACT, INDEX, LEVEL, PARENT, RANK, SURPRISE };
 export const NODE = Symbol("NODE");
+export const OPEN = Symbol("OPEN");
+export const SHOWN = Symbol("SHOWN");
 
 /**
  * Renders a hierarchical tree based on the provided data and configuration.
@@ -151,19 +153,19 @@ function show(insightTree, filter, options = {}) {
     closedClass = "insight-closed",
   } = options;
   const { tree } = insightTree;
-  const n = tree.length;
-  const shown = tree.map((row) => filter(row, row[NODE]));
-  const open = new Array(n);
-  if (openAncestors)
-    for (let i = 0; i < tree.length; i++)
-      if (shown[i]) for (let row = tree[i]; row[PARENT]; row = row[PARENT]) open[row[INDEX]] = true;
-  if (showSiblings)
-    for (let i = 0; i < tree.length; i++)
-      if (shown[i] || open[i]) tree.forEach((row, j) => (shown[j] |= row[PARENT] === tree[i][PARENT]));
-  for (let i = 0; i < tree.length; i++) {
-    tree[i][NODE].classList.toggle(hiddenClass, !shown[i] && !open[i]);
-    tree[i][NODE].classList.toggle(closedClass, !open[i]);
-  }
+  tree.forEach((row) => {
+    row[SHOWN] = filter(row, row[NODE]);
+    if (row[SHOWN] && openAncestors)
+      for (let parent = row[PARENT]; parent; parent = parent[PARENT]) parent[OPEN] = true;
+  });
+  tree.forEach((row) => {
+    if (showSiblings && (row[SHOWN] || row[OPEN]))
+      tree.forEach((v, j) => (tree[j][SHOWN] |= v[PARENT] === row[PARENT]));
+  });
+  tree.forEach((row) => {
+    row[NODE].classList.toggle(hiddenClass, !row[SHOWN] && !row[OPEN]);
+    row[NODE].classList.toggle(closedClass, !row[OPEN]);
+  });
   return insightTree;
 }
 

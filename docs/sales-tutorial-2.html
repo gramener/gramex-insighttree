@@ -5,7 +5,6 @@
 <script type="module">
   import { insightTree } from "../dist/insighttree.js";
   const data = await fetch("sales-data.json").then((r) => r.json());
-
   const tree = insightTree(".sales-tree", {
     data: data,
     groups: ["city", "product", "channel"],
@@ -14,7 +13,6 @@
   });
   // Show top 4 insights
   tree.update({ rank: 4 });
-
   document.querySelector("#rank").addEventListener("input", (e) => {
     tree.update({ rank: e.target.value });
   });

@@ -11,6 +11,7 @@ const VISIT_ORDER = Symbol("VISIT_ORDER");
 const IMPACT_RANK = Symbol("IMPACT_RANK");
 
 /**
+ * @ignore
  * Calculates a hierarchical tree structure based on the provided data and configuration.
  *
  * @function
@@ -144,6 +145,7 @@ function nest(data, groupNames, groupValues, reduce, context = {}) {
 }
 
 /**
+ * @ignore
  * Flattens a tree structure into an array, while applying sorting rules to each level.
  * @param {Object} tree - The tree structure to flatten.
  * @param {Array<Function>} sorts - An array of sorting functions to apply at each level of the tree.
