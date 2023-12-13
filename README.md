@@ -15,7 +15,7 @@ So we need to drill down to the next level. And the next.
 
 Here's a sample output:
 
-[![Sales - Insight Tree](docs/sales.gif)](docs/sales.html ":include :type=html")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales.gif)](docs/sales.html ":include :type=html")
 
 ## Installation
 
@@ -72,7 +72,7 @@ Use via CDN as a script:
 
 For example:
 
-[sales-data.json](docs/sales-data.json ":ignore")
+[sales-data.json](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-data.json ":ignore")
 
 | city | product | channel | sales | target | gap |
 | ---- | ------- | ------- | ----: | -----: | --: |
@@ -86,11 +86,11 @@ For example:
 
 To create a basic insight tree with this data, construct the `insightTree()` as follows:
 
-[Source code](docs/sales-tutorial-1.html ":include :type=code")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-tree.png)](docs/sales-tree.html ":include :type=html height=200px")
+
+[Source code](docs/sales-tree.html ":include :type=code")
 
 Output:
-
-[[Tutorial - 1](docs/sales-tutorial-1.png)](docs/sales-tutorial-1.html ":include :type=html height=200px")
 
 This tree explores the City > Product > Channel hierarchy for the biggest insight, based on:
 
@@ -126,30 +126,32 @@ This is an array of objects, one for each row of the tree to render. The object 
 
 Call `tree.update({ level: 1 })` to show the level 0 (root node) and level 1 (children of root node):
 
-[![Tutorial - 1a](docs/sales-tutorial-1a.gif)](docs/sales-tutorial-1a.html ":include :type=html height=200px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-levels.gif)](docs/sales-levels.html ":include :type=html height=200px")
 
 Move the slider to show more or fewer levels.
 
-[Source code](docs/sales-tutorial-1a.html ":include :type=code")
+[Source code](docs/sales-levels.html ":include :type=code")
 
 ## Expand or collapse insights
 
 Call `tree.update({ rank: 4 })` to show the top 4 insights.
 
-[![Tutorial - 2](docs/sales-tutorial-2.gif)](docs/sales-tutorial-2.html ":include :type=html height=400px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-ranks.gif)](docs/sales-ranks.html ":include :type=html height=400px")
+
+[Source code](docs/sales-ranks.html ":include :type=code")
 
 This tree:
 
 - **Controls the number of insights**. Increasing the slider shows more gaps. Decreasing shows fewer gaps.
 - **Highlights the current gap**. The row in orange is the current insight.
 
-[Source code](docs/sales-tutorial-2.html ":include :type=code")
-
 ## Expand or collapse deep insights
 
 Call `tree.updateLeaf(1)` to show first top "deep" insight (i.e. at the deepest segment -- a leaf node).
 
-[![Tutorial - 2c](docs/sales-tutorial-2c.gif)](docs/sales-tutorial-2c.html ":include :type=html height=380px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-leafs.gif)](docs/sales-leafs.html ":include :type=html height=380px")
+
+[Source code](docs/sales-leafs.html ":include :type=code")
 
 Move the slider to show the next or previous deep insight - highlighted in orange.
 
@@ -164,9 +166,9 @@ It accepts a function that returns `true` to expand the node, `false` to collaps
 
 For example, `tree.show((row) => row[LEVEL] == 0 || row[GROUP] == 'Clock')` to expand all rows of level 0, and any row with the group "Bonn".
 
-[![Tutorial - 2b](docs/sales-tutorial-2b.png)](docs/sales-tutorial-2b.html ":include :type=html height=200px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-show.png)](docs/sales-show.html ":include :type=html height=200px")
 
-[Source code](docs/sales-tutorial-2b.html ":include :type=code")
+[Source code](docs/sales-show.html ":include :type=code")
 
 `tree.show((row, node) => ..., options)` accepts a second `options` parameter:
 
@@ -177,9 +179,9 @@ For example, `tree.show((row) => row[LEVEL] == 0 || row[GROUP] == 'Clock')` to e
 
 For example, `tree.show((row) => row.city == 'Bonn' && row.product == 'Clock' && row[LEVEL] == 2, { showSiblings: true })` to show all Bonn Clock sales and its siblings.
 
-[![Tutorial - 2e](docs/sales-tutorial-2e.png)](docs/sales-tutorial-2e.html ":include :type=html height=200px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-show-siblings.png)](docs/sales-show-siblings.html ":include :type=html height=200px")
 
-[Source code](docs/sales-tutorial-2e.html ":include :type=code")
+[Source code](docs/sales-show-siblings.html ":include :type=code")
 
 
 ## Expand or collapse nodes
@@ -188,9 +190,9 @@ Call `tree.toggle(node, true)` to expand a specific node. `.toggle(node, false)`
 
 **Note**: This does *NOT* automatically open or show the ancestors. Use [`show()`](#show-or-hide-nodes) for that.
 
-[![Tutorial - 2a](docs/sales-tutorial-2a.gif)](docs/sales-tutorial-2a.html ":include :type=html height=200px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-toggle.gif)](docs/sales-toggle.html ":include :type=html height=200px")
 
-[Source code](docs/sales-tutorial-2a.html ":include :type=code")
+[Source code](docs/sales-toggle.html ":include :type=code")
 
 ## Update classes
 
@@ -203,7 +205,9 @@ It accepts a function that returns `true` to add the class, `false` to remove it
 
 For example, `tree.classed('insight-current', (row) => row[LEVEL] == 0 || row[GROUP] == 'Clock')` to highlight all rows of level 0, and any row with the group "Clock".
 
-[![Tutorial - 2d](docs/sales-tutorial-2d.png)](docs/sales-tutorial-2d.html ":include :type=html height=200px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-classes.png)](docs/sales-classes.html ":include :type=html height=200px")
+
+[Source code](docs/sales-classes.html ":include :type=code")
 
 ## Style the tree
 
@@ -223,7 +227,7 @@ A row always has these attributes:
 
 Note: You can rename the "Total" group to "All" by passing `insightTree({ ..., totalGroup: "All" })`.
 
-Download [arrow.svg](docs/arrow.svg ":ignore") to the same folder and add this below `<link rel="stylesheet" ...>`:
+Download [arrow.svg](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/arrow.svg ":ignore") to the same folder and add this below `<link rel="stylesheet" ...>`:
 
 ```html
 <style>
@@ -239,9 +243,9 @@ Download [arrow.svg](docs/arrow.svg ":ignore") to the same folder and add this b
 </style>
 ```
 
-[![Tutorial - 3](docs/sales-tutorial-3.png)](docs/sales-tutorial-3.html ":include :type=html height=200px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-style.png)](docs/sales-style.html ":include :type=html height=200px")
 
-[Source code](docs/sales-tutorial-3.html ":include :type=code")
+[Source code](docs/sales-style.html ":include :type=code")
 
 ## Render custom trees
 
@@ -268,9 +272,9 @@ For example, to render the tree as a table, add this just after `impact: ...`
       </table>`,
 ```
 
-[![Tutorial - 4](docs/sales-tutorial-4.png)](docs/sales-tutorial-4.html ":include :type=html height=250px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-render.png)](docs/sales-render.html ":include :type=html height=250px")
 
-[Source code](docs/sales-tutorial-4.html ":include :type=code")
+[Source code](docs/sales-render.html ":include :type=code")
 
 `render(el, options)` function is called with the same options as [`insightTree()`](#api), i.e. `{ data, groups, metrics, sort, impact, rankBy, totalGroup }`.
 
@@ -314,9 +318,9 @@ Also replace:
 <td class="text-end" style="background-color:${color(sales / target)};color:black">${sales - target}</td>
 ```
 
-[![Tutorial - 5](docs/sales-tutorial-5.png)](docs/sales-tutorial-5.html ":include :type=html height=350px")
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/main/docs/sales-d3.png)](docs/sales-d3.html ":include :type=html height=350px")
 
-[Source code](docs/sales-tutorial-5.html ":include :type=code")
+[Source code](docs/sales-d3.html ":include :type=code")
 
 ## Custom aggregation
 
