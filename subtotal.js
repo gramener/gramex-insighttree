@@ -37,14 +37,14 @@ export function subtotal({
   rankBy = (v) => v[IMPACT] * v[SURPRISE],
   totalGroup = "Total",
 }) {
-  if (typeof groups != "object" || groups === null)
-    throw new Error(`groups must be ['col', ...] or {col: row => ...}, not ${groups}`);
+  if (typeof groups !== "object" || !groups) throw new Error(`Invalid groups: ${groups}`);
   // Convert array of strings [x, y, z] into object {x: x, y: y, z: z}
   if (Array.isArray(groups)) groups = Object.fromEntries(groups.map((col) => [col, col]));
-  let groupNames = Object.keys(groups);
+  const groupNames = Object.keys(groups);
   // Convert string values into accessors
-  let groupValues = Object.values(groups).map((col) => (typeof col === "function" ? col : (d) => d[col]));
+  const groupValues = Object.values(groups).map((col) => (typeof col === "function" ? col : (d) => d[col]));
 
+  // Check if metrics is a valid object or array, and convert it to the desired format
   if (typeof metrics != "object" || metrics === null)
     throw new Error(`metrics must be ['col', ...] or {col: 'sum', col: d => ...}, not ${metrics}`);
   if (Array.isArray(metrics)) metrics = metrics.map((key) => [key, (d) => agg.sum(key, d)]);
@@ -53,7 +53,7 @@ export function subtotal({
       key,
       typeof value === "function" ? value : (d) => agg[value](key, d),
     ]);
-
+  // Check if sort is a valid object, string, or undefined, and convert it to the desired format
   if ((typeof sort != "object" && typeof sort != "string" && sort !== undefined) || sort === null)
     throw new Error("sort must be '+col', '-col', or {col1: '-col2', ...}");
 
@@ -81,36 +81,32 @@ export function subtotal({
     for (const [key, fn] of metrics) result[key] = fn(data, result);
     return result;
   }
-
+  // Calculate the hierarchical tree structure based on the provided data and configuration
   const tree = nest(data, groupNames, groupValues, reduce, { [GROUP]: totalGroup });
+  // Flatten the tree structure into an array, applying sorting rules to each level
   const result = flatten(tree, sorts);
+  // Calculate the impact metric for each element in the result array and sort the array based on the impact metric
   result
     .map((v) => [impact(v), v])
     .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
     .forEach(([val, v], i) => (v[IMPACT_RANK] = i + 1) && (v[IMPACT] = val));
-  // Add visit order via rank-based traversal
-  function traverseTree(pendingList, visitOrder = 0) {
-    while (pendingList.length) {
-      const node = pendingList.shift();
-      node.metrics[VISIT_ORDER] = visitOrder++;
-      if (node.children) {
-        pendingList = pendingList.concat(Array.from(node.children.values()));
-        pendingList.sort((a, b) => a.metrics[IMPACT_RANK] - b.metrics[IMPACT_RANK]);
-      }
-    }
-  }
+  // Traverse the tree in a rank-based order to assign VISIT_ORDER to each element
   traverseTree([tree]);
-  const minImpact = Math.min(...result.map((v) => v[IMPACT]));
-  const maxImpact = Math.max(...result.map((v) => v[IMPACT]));
+  // Calculate the minimum and maximum impact values from the result array
+  const [minImpact, maxImpact] = [Math.min(...result.map((v) => v[IMPACT])), Math.max(...result.map((v) => v[IMPACT]))];
+  // Normalize the impact and surprise metrics for each element in the result array
   result.forEach((v) => {
     v[IMPACT] = (v[IMPACT] - minImpact) / (maxImpact - minImpact);
     v[SURPRISE] = v[VISIT_ORDER] / result.length;
   });
+  // Calculate the rank metric for each element in the result array and sort the array based on the rank metric
   result
     .map((v) => [rankBy(v), v])
     .sort((a, b) => b[0] - a[0])
     .forEach(([, v], i) => (v[RANK] = i + 1));
+  // Assign the index value to each element in the result array
   result.forEach((v, i) => (v[INDEX] = i));
+  // Return the final result array
   return result;
 }
 
@@ -172,6 +168,7 @@ function flatten(tree, sorts) {
   return result;
 }
 
+// Convert sortable column to a sorting function
 function sortableToFunction(column, name) {
   if (column === undefined) return () => 0;
   else if (typeof column === "string") {
@@ -188,6 +185,18 @@ function sortableToFunction(column, name) {
     return column;
   } else {
     throw new Error(`${name} must be a '+col', '-col', d => ..., not ${column}`);
+  }
+}
+
+// Add visit order via rank-based traversal
+function traverseTree(pendingList, visitOrder = 0) {
+  while (pendingList.length) {
+    const node = pendingList.shift();
+    node.metrics[VISIT_ORDER] = visitOrder++;
+    if (node.children) {
+      pendingList = pendingList.concat(Array.from(node.children.values()));
+      pendingList.sort((a, b) => a.metrics[IMPACT_RANK] - b.metrics[IMPACT_RANK]);
+    }
   }
 }
 
