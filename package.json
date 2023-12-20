@@ -49,6 +49,22 @@
   "prettier": {
     "printWidth": 120
   },
+  "eslintConfig": {
+    "root": true,
+    "parserOptions": {
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true,
+      "es2022": true,
+      "jest": true
+    },
+    "plugins": [
+      "html"
+    ],
+    "extends": "eslint:recommended"
+  },
   "devDependencies": {
     "documentation": "^14.0.2",
     "esbuild": "^0.17.12",
