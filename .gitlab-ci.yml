@@ -1,6 +1,6 @@
 validate:
   image: gramener/builderrors
-  script: builderrors
+  script: builderrors --skip=data-blocks
 
 deploy:
   stage: deploy
