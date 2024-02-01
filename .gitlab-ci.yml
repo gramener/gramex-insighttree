@@ -11,3 +11,6 @@ deploy:
     URL: gramex-insighttree
     VERSION: static
     SETUP: npm install && npm run build
+  environment:
+    name: production
+    url: https://gramener.com/gramex-insighttree/
