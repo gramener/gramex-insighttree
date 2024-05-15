@@ -5,6 +5,9 @@ export const NODE = Symbol("NODE");
 export const OPEN = Symbol("OPEN");
 export const SHOWN = Symbol("SHOWN");
 
+// Store event listeners for each tree
+const listeners = new WeakMap();
+
 /**
  * Renders a hierarchical tree based on the provided data and configuration.
  *
@@ -23,12 +26,12 @@ export const SHOWN = Symbol("SHOWN");
  * @param {function} [options.render=tableRender] - A function to render the tree.
  * @param {string} [options.totalGroup="Total"] - Name of the total row's `GROUP`.
  *
- * @returns {Object} - Returns an object with methods to interact with the rendered tree.
- * @returns {Object[]} .tree - The calculated tree data structure.
- * @returns {function} .update - Method to update the tree.
- * @returns {function} .toggle - Method to toggle nodes' expansion or collapse state.
- * @returns {function} .show - Method to show/hide nodes based on a rule.
- * @returns {function} .classed - Method to set class on each node
+ * @returns {Object} - Returns an object with methods to interact with the rendered tree. Includes
+ *    - `.tree` - The calculated tree data structure.
+ *    - `.update()` - Method to update the tree.
+ *    - `.toggle()` - Method to toggle nodes' expansion or collapse state.
+ *    - `.show()` - Method to show/hide nodes based on a rule.
+ *    - `.classed()` - Method to set class on each node
  *
  * @example
  * const tree = insightTree("#myTree", {
@@ -69,17 +72,26 @@ export function insightTree(
     console.error(
       `insightTree: render() generated ${nodes.length} nodes with [data-insight-level]. Expected ${tree.length}`,
     );
-  // Listen to clicks and expand/collapse nodes
-  el.addEventListener("click", (e) => {
-    // Find the node that was clicked
-    const node = e.target.closest("[data-insight-level]");
-    if (node) toggle.bind(el, insightTree)(node);
-  });
+  // Bind methods
   insightTree.show = show.bind(el, insightTree);
   insightTree.classed = classed.bind(el, insightTree);
   insightTree.update = update.bind(el, insightTree);
   insightTree.updateLeaf = updateLeaf.bind(el, insightTree);
   insightTree.toggle = toggle.bind(el, insightTree);
+  // Listen to clicks and expand/collapse nodes
+  function listener(e) {
+    // Find the node that was clicked
+    const node = e.target.closest("[data-insight-level]");
+    if (node) insightTree.toggle(node);
+  }
+  // Remove previous listener if any
+  if (listeners.has(el)) {
+    el.removeEventListener("click", listeners.get(el));
+    listeners.delete(el);
+  }
+  // Add new listener
+  el.addEventListener("click", listener);
+  listeners.set(el, listener);
   return insightTree;
 }
 
@@ -158,15 +170,20 @@ function show(insightTree, filter, options = {}) {
     closedClass = "insight-closed",
   } = options;
   const { tree } = insightTree;
+  // Close all nodes to start with
+  tree.forEach((row) => (row[OPEN] = false));
+  // Show all nodes from filter. Open their parents
   tree.forEach((row) => {
     row[SHOWN] = filter(row, row[NODE]);
     if (row[SHOWN] && openAncestors)
       for (let parent = row[PARENT]; parent; parent = parent[PARENT]) parent[OPEN] = true;
   });
-  tree.forEach((row) => {
-    if (showSiblings && (row[SHOWN] || row[OPEN]))
-      tree.forEach((v, j) => (tree[j][SHOWN] |= v[PARENT] === row[PARENT]));
-  });
+  // Show siblings of shown or open nodes
+  if (showSiblings)
+    tree.forEach((row) => {
+      if (row[SHOWN] || row[OPEN]) tree.forEach((v, j) => (tree[j][SHOWN] |= v[PARENT] === row[PARENT]));
+    });
+  // Hide nodes that are not shown / open. Add closedClass to closed nodes
   tree.forEach((row) => {
     row[NODE].classList.toggle(hiddenClass, !row[SHOWN] && !row[OPEN]);
     row[NODE].classList.toggle(closedClass, !row[OPEN]);
@@ -184,35 +201,43 @@ function classed(insightTree, className, filter) {
  *
  * Uses `data-insight-level` and `data-insight-rank` of the nodes to determine levels and ranks.
  *
- * - Nodes with a rank == options.rank will have ".insight-current".
- * - Nodes with a rank <= options.rank will have ".insight-highlight".
- * - Nodes will be shown if their rank <= options.rank, or level <= options.level,
- *   or they have a child node that meets the rank criteria.
- * - Closed nodes (without a child that meets the rank criteria) will have ".insight-closed".
+ * - Nodes with a `rank == options.rank` will have `".insight-current"`.
+ * - Nodes with a `rank <= options.rank` will have `".insight-highlight"` (if exactRank=true).
+ * - Nodes will be shown if
+ *    - `rank <= options.rank` (or `rank == options.rank` if `exactRank=false`), OR
+ *    - `level <= options.level`, OR
+ *   - they have a child node that meets the rank criteria.
+ * - Closed nodes (without a child that meets the rank criteria) will have `".insight-closed"`.
  *
  * @function
  * @param {Object} insightTree - insightTree object
- * @param {Object} options - The criteria for updating the tree nodes.
- * @param {number} [options.rank] - The rank criteria. Nodes with rank <= options.rank will be highlighted.
- * @param {number} [options.level] - The level criteria. Nodes with level <= options.value will be shown.
- * @param {Object} [options.showOptions] - Options for insightTree.show().
+ * @param {Object} criteria - The criteria for updating the tree nodes.
+ * @param {number} [criteria.rank] - The rank criteria. Nodes with rank <= options.rank will be highlighted (or rank == options.rank if exactRank=true).
+ * @param {number} [criteria.level] - The level criteria. Nodes with level <= options.value will be shown.
+ * @param {Object} [options] - display options
+ * @param {Object} [options.leaf] - If true, shows the LEAF (not parent nodes) with specified rank. Default: false
+ * @param {Object} [options.exactRank] - If true, shows only specified rank. Else shows all ranks UPTO specified rank. Default: false
+ * @param {boolean} [options.showOptions] - Options for `.show()`
  *
  * @example
  * // Assuming the DOM has nodes with `data-insight-level` and `data-insight-rank` attributes.
- * update(treeData, { rank: 3, level: 2 }, { showSiblings: true });
+ * update(treeData, { rank: 3, level: 2 }, { exactRank: false, showSiblings: true });
  *
  * @returns {insightTree} - Returns the insightTree object.
  */
-function update(insightTree, { rank, level }, showOptions = {}) {
+function update(insightTree, { rank, level }, { leaf, exactRank, ...showOptions } = {}) {
+  if (leaf) rank = insightTree.tree[insightTree.leaves[rank]]?.[RANK] ?? insightTree.tree.length;
+  const filter = exactRank
+    ? (row) => row[RANK] == rank || row[LEVEL] <= level
+    : (row) => row[RANK] <= rank || row[LEVEL] <= level;
   return insightTree
-    .show((row) => row[RANK] <= rank || row[LEVEL] <= level, showOptions)
+    .show(filter, showOptions)
     .classed("insight-highlight", (row) => row[RANK] <= rank)
     .classed("insight-current", (row) => row[RANK] == rank);
 }
 
-function updateLeaf(insightTree, leaf) {
-  const rank = insightTree.tree[insightTree.leaves[leaf]]?.[RANK] ?? insightTree.tree.length;
-  return insightTree.update({ rank }, { showSiblings: true });
+function updateLeaf(insightTree, rank, { ...updateOptions } = {}) {
+  return insightTree.update({ rank }, { ...updateOptions, leaf: true });
 }
 
 const pc = new Intl.NumberFormat("en-US", { style: "percent", notation: "compact", compactDisplay: "short" });
@@ -224,7 +249,7 @@ const num = new Intl.NumberFormat("en-US", {
 
 export const tableRender = (el, { tree, metrics }) => {
   el.innerHTML = /* html */ `
-  <table class="table text-end">
+  <table class="table">
     <thead>
       <tr>
         <th>#</th>
@@ -243,9 +268,9 @@ export const tableRender = (el, { tree, metrics }) => {
           <td style="padding-left:${rest[LEVEL] * 1.5}rem">
             <span class="insight-toggle"></span> ${rest[GROUP]}
           </td>
-          ${metrics.map((metric) => /* html */ `<td>${num.format(rest[metric])}</td>`).join("")}
-            <td>${pc.format(rest[SURPRISE])}</td>
-            <td>${pc.format(rest[IMPACT])}</td>
+          ${metrics.map((metric) => /* html */ `<td class="text-end">${num.format(rest[metric])}</td>`).join("")}
+            <td class="text-end">${pc.format(rest[SURPRISE])}</td>
+            <td class="text-end">${pc.format(rest[IMPACT])}</td>
         </tr>`,
         )
         .join("")}

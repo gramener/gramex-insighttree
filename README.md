@@ -145,9 +145,22 @@ This tree:
 - **Controls the number of insights**. Increasing the slider shows more gaps. Decreasing shows fewer gaps.
 - **Highlights the current gap**. The row in orange is the current insight.
 
+## Show a specific insight
+
+Call `tree.update({ rank: 4 }, { exactRank: true })` to show just the 4th insight.
+
+[![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/master/docs/sales-exact-rank.gif)](docs/sales-exact-rank.html ":include :type=html height=400px")
+
+[Source code](docs/sales-exact-rank.html ":include :type=code")
+
+This tree:
+
+- **Controls the number of insights**. Increasing the slider shows more gaps. Decreasing shows fewer gaps.
+- **Highlights the current gap**. The row in orange is the current insight.
+
 ## Expand or collapse deep insights
 
-Call `tree.updateLeaf(1)` to show first top "deep" insight (i.e. at the deepest segment -- a leaf node).
+Call `tree.update(1, { leaf: true })` to show first top "deep" insight (i.e. at the deepest segment -- a leaf node).
 
 [![Example](https://code.gramener.com/cto/gramex-insighttree/-/raw/master/docs/sales-leafs.gif)](docs/sales-leafs.html ":include :type=html height=380px")
 
@@ -499,6 +512,8 @@ It returns a `tree` object has the following methods:
   - `tree.update({ rank: 5 })` shows the top 5 insights
   - `tree.update({ level: 2 })` shows the level 1 (root) + level 2 (child) rows
   - `tree.update({ rank: 5, level: 2 })` shows the top 5 insights AND all level 1 + level 2 rows
+  - `tree.update({ rank: 5 }, { exactRank: true })` shows the 5th insight only
+  - `tree.update({ rank: 5 }, { showSiblings: true })` shows the top 5 insights and all siblings of open nodes
 - `toggle(node, force)` expands or collapses the specified node. For example:
   - `tree.toggle(document.querySelector("[data-insight-level=0]"))` toggles the root node
   - `tree.toggle(document.querySelector("[data-insight-level=0]"), true)` expands the root node
@@ -506,6 +521,11 @@ It returns a `tree` object has the following methods:
 
 ## Release notes
 
+- 3.2.0: 15 May 2024. Expand update options
+  - `tree.update({ rank }, { exactRank: true })` shows only the specified rank, not previous ranks
+  - `tree.update({ rank: n }, { leaf: true })` shows the nth ranked LEAF node, skipping parents. An alias for `tree.updateLeaf(n)`.
+  - `tree.updateLeaf(n)` deprecated
+- 3.1.0: 28 Apr 2024. `insightTree(el)` is re-entrant. You can call it multiple times on the same element.
 - 3.0.0: 13 Dec 2023. Rewrite with more flexible API.
   - `.show()` and `.classed()` introduced
   - `_xxx` properties renamed to `[xxx]` symbols to avoid conflict

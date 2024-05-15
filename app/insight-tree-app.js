@@ -113,7 +113,7 @@ function renderTree() {
 }
 
 function updateTreeSlider() {
-  if ($showDeepInsights.checked) tree.updateLeaf(+$slider.value);
+  if ($showDeepInsights.checked) tree.updateLeaf({ rank: +$slider.value }, { leaf: true });
   else tree.update({ rank: +$slider.value });
 }
 

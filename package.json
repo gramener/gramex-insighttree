@@ -1,6 +1,6 @@
 {
   "name": "@gramex/insighttree",
-  "version": "3.0.0",
+  "version": "3.2.0",
   "description": "Insight Tree breaks down a metric into a hierarchy (tree) and highlights the insights from that metric.",
   "type": "module",
   "module": "dist/insighttree.js",
@@ -11,7 +11,7 @@
     "watch": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist --watch",
     "build-browser": "esbuild insighttree.js insighttree.css --format=iife --global-name=gramex --bundle --sourcemap --minify --outdir=dist",
     "build-esm": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist",
-    "build": "npm run build-browser && npm run build-esm",
+    "build": "npm run build-browser && npm run build-esm && npm run docs",
     "prepublishOnly": "npm run lint && npm run build",
     "pretest": "npm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"

@@ -36,17 +36,12 @@ const tree = insightTree("#myTree", {
 
 - Throws **[Error][5]** Throws an error if the provided selector does not match any DOM element.
 
-Returns **[Object][2]** Returns an object with methods to interact with the rendered tree.
+Returns **[Object][2]** Returns an object with methods to interact with the rendered tree. Includes\* `.tree` - The calculated tree data structure.
 
-Returns **[Array][3]<[Object][2]>** .tree - The calculated tree data structure.
-
-Returns **[function][4]** .update - Method to update the tree.
-
-Returns **[function][4]** .toggle - Method to toggle nodes' expansion or collapse state.
-
-Returns **[function][4]** .show - Method to show/hide nodes based on a rule.
-
-Returns **[function][4]** .classed - Method to set class on each node
+- `.update()` - Method to update the tree.
+- `.toggle()` - Method to toggle nodes' expansion or collapse state.
+- `.show()` - Method to show/hide nodes based on a rule.
+- `.classed()` - Method to set class on each node
 
 ## toggle
 
@@ -117,32 +112,33 @@ Updates the visibility and styling of tree nodes based on the specified rank and
 
 Uses `data-insight-level` and `data-insight-rank` of the nodes to determine levels and ranks.
 
-- Nodes with a rank == options.rank will have ".insight-current".
-- Nodes with a rank <= options.rank will have ".insight-highlight".
-- Nodes will be shown if their rank <= options.rank, or level <= options.level,
-  or they have a child node that meets the rank criteria.
-- Closed nodes (without a child that meets the rank criteria) will have ".insight-closed".
+- Nodes with a `rank == options.rank` will have `".insight-current"`.
+- Nodes with a `rank <= options.rank` will have `".insight-highlight"` (if exactRank=true).
+- Nodes will be shown if
+  - `rank <= options.rank` (or `rank == options.rank` if `exactRank=false`), OR
+  - `level <= options.level`, OR
+  - they have a child node that meets the rank criteria.
+- Closed nodes (without a child that meets the rank criteria) will have `".insight-closed"`.
 
 ### Parameters
 
 - `insightTree` **[Object][2]** insightTree object
-- `$1` **[Object][2]**&#x20;
+- `criteria` **[Object][2]** The criteria for updating the tree nodes.
 
-  - `$1.rank` &#x20;
-  - `$1.level` &#x20;
+  - `criteria.rank` **[number][9]?** The rank criteria. Nodes with rank <= options.rank will be highlighted (or rank == options.rank if exactRank=true).
+  - `criteria.level` **[number][9]?** The level criteria. Nodes with level <= options.value will be shown.
 
-- `showOptions` (optional, default `{}`)
-- `options` **[Object][2]** The criteria for updating the tree nodes.
+- `options` **[Object][2]?** display options (optional, default `{}`)
 
-  - `options.rank` **[number][9]?** The rank criteria. Nodes with rank <= options.rank will be highlighted.
-  - `options.level` **[number][9]?** The level criteria. Nodes with level <= options.value will be shown.
-  - `options.showOptions` **[Object][2]?** Options for insightTree.show().
+  - `options.leaf` **[Object][2]?** If true, shows the LEAF (not parent nodes) with specified rank. Default: false
+  - `options.exactRank` **[Object][2]?** If true, shows only specified rank. Else shows all ranks UPTO specified rank. Default: false
+  - `options.showOptions` **[boolean][7]?** Options for `.show()`
 
 ### Examples
 
 ```javascript
 // Assuming the DOM has nodes with `data-insight-level` and `data-insight-rank` attributes.
-update(treeData, { rank: 3, level: 2 }, { showSiblings: true });
+update(treeData, { rank: 3, level: 2 }, { exactRank: false, showSiblings: true });
 ```
 
 Returns **[insightTree][8]** Returns the insightTree object.

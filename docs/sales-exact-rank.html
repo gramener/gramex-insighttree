@@ -1,5 +1,5 @@
 <link rel="stylesheet" href="../dist/insighttree.css" />
-<input id="rank" type="range" min="1" max="200" value="0" />
+<input id="rank" type="range" min="1" max="12" value="4" />
 <div class="sales-tree"></div>
 
 <script type="module">
@@ -11,9 +11,9 @@
     metrics: ["sales", "target"],
     impact: ({ sales, target }) => sales - target,
   });
-  // Show first deep insight
-  tree.update({ rank: 0 }, { leaf: true });
+  // Show ONLY the 4th insight, not the previous ones
+  tree.update({ rank: 4 }, { exactRank: true });
   document.querySelector("#rank").addEventListener("input", (e) => {
-    tree.update({ rank: +e.target.value }, { leaf: true });
+    tree.update({ rank: +e.target.value }, { exactRank: true });
   });
 </script>
