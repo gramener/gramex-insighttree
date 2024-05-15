@@ -65,8 +65,8 @@ export function subtotal({
         ? order[0] == "+"
           ? sorters.ascending(order.slice(1))
           : order[0] == "-"
-          ? sorters.descending(order.slice(1))
-          : sorters.ascending(order)
+            ? sorters.descending(order.slice(1))
+            : sorters.ascending(order)
         : order,
     )
     .map((order) => (order ? (a, b) => order(a.metrics, b.metrics) : order));
