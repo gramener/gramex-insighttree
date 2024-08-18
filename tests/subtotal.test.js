@@ -50,7 +50,7 @@ describe("subtotal", () => {
         { [GROUP]: "21", [LEVEL]: 2, [RANK]: 7, 0: "a2", 1: "21", x: 10, y: 11, z: 12 },
         { [GROUP]: "22", [LEVEL]: 2, [RANK]: 8, 0: "a2", 1: "22", x: 13, y: 14, z: 15 },
         { [GROUP]: "23", [LEVEL]: 2, [RANK]: 9, 0: "a2", 1: "23", x: 16, y: 17, z: 18 },
-      ],
+      ]
     );
   });
   test("metrics cannot be undefined, null, string, number, boolean", () => {
@@ -96,7 +96,7 @@ describe("subtotal", () => {
         { [GROUP]: "b1", [LEVEL]: 2, [RANK]: 7, a: "a2", b: "b1", x: 10, p: 91, q: 91, y: 11, z: 1 },
         { [GROUP]: "b2", [LEVEL]: 2, [RANK]: 8, a: "a2", b: "b2", x: 13, p: 93, q: 93, y: 14, z: 1 },
         { [GROUP]: "b3", [LEVEL]: 2, [RANK]: 9, a: "a2", b: "b3", x: 16, p: 94, q: 94, y: 17, z: 1 },
-      ],
+      ]
     );
   });
   test("sort cannot be undefined, null, number, boolean", () => {
@@ -157,7 +157,7 @@ describe("subtotal", () => {
         { [GROUP]: "b3", [LEVEL]: 2, [RANK]: 7, a: "a2", b: "b3", x: 16 },
         { [GROUP]: "b2", [LEVEL]: 2, [RANK]: 8, a: "a2", b: "b2", x: 13 },
         { [GROUP]: "b1", [LEVEL]: 2, [RANK]: 9, a: "a2", b: "b1", x: 10 },
-      ],
+      ]
     );
   });
   test("impact cannot be null, number, boolean, array, object", () => {
@@ -200,7 +200,7 @@ describe("subtotal", () => {
         { [GROUP]: "Total", [LEVEL]: 0, [RANK]: 1, x: 51 },
         { [GROUP]: "a1", [LEVEL]: 1, [RANK]: 3, a: "a1", x: 12 },
         { [GROUP]: "a2", [LEVEL]: 1, [RANK]: 2, a: "a2", x: 39 },
-      ],
+      ]
     );
   });
   test("totalGroup works", () => {
@@ -222,7 +222,7 @@ describe("tutorial - custom aggregation", () => {
         { [LEVEL]: 0, [RANK]: 1, [GROUP]: "Total", x: 51, y: 57, z: 63 },
         { [LEVEL]: 1, [RANK]: 2, [GROUP]: "a1", a: "a1", x: 12, y: 15, z: 18 },
         { [LEVEL]: 1, [RANK]: 3, [GROUP]: "a2", a: "a2", x: 39, y: 42, z: 45 },
-      ],
+      ]
     );
   });
 
@@ -243,7 +243,7 @@ describe("tutorial - custom aggregation", () => {
         { [LEVEL]: 2, [RANK]: 7, [GROUP]: "1", a: "a2", b: "1", x: 10 },
         { [LEVEL]: 2, [RANK]: 8, [GROUP]: "2", a: "a2", b: "2", x: 13 },
         { [LEVEL]: 2, [RANK]: 9, [GROUP]: "3", a: "a2", b: "3", x: 16 },
-      ],
+      ]
     );
   });
 
@@ -263,7 +263,7 @@ describe("tutorial - custom aggregation", () => {
         { [LEVEL]: 0, [RANK]: 1, [GROUP]: "Total", x: 51, y: 9.5, z: 3, diff: 41.5 },
         { [LEVEL]: 1, [RANK]: 2, [GROUP]: "a1", a: "a1", x: 12, y: 5, z: 3, diff: 7 },
         { [LEVEL]: 1, [RANK]: 3, [GROUP]: "a2", a: "a2", x: 39, y: 14, z: 12, diff: 25 },
-      ],
+      ]
     );
   });
 
@@ -285,7 +285,7 @@ describe("tutorial - custom aggregation", () => {
         { [LEVEL]: 2, [RANK]: 7, [GROUP]: "b3", a: "a1", b: "b3", x: 7 },
         { [LEVEL]: 2, [RANK]: 8, [GROUP]: "b2", a: "a1", b: "b2", x: 4 },
         { [LEVEL]: 2, [RANK]: 9, [GROUP]: "b1", a: "a1", b: "b1", x: 1 },
-      ],
+      ]
     );
   });
 
@@ -310,7 +310,7 @@ describe("tutorial - custom aggregation", () => {
         { [LEVEL]: 2, [RANK]: 7, [GROUP]: "b1", a: "a2", b: "b1", x: 10 },
         { [LEVEL]: 2, [RANK]: 8, [GROUP]: "b2", a: "a2", b: "b2", x: 13 },
         { [LEVEL]: 2, [RANK]: 9, [GROUP]: "b3", a: "a2", b: "b3", x: 16 },
-      ],
+      ]
     );
   });
 });

@@ -46,7 +46,7 @@ const listeners = new WeakMap();
  */
 export function insightTree(
   selector,
-  { data, groups, metrics, sort, impact, rankBy, totalGroup, render = tableRender },
+  { data, groups, metrics, sort, impact, rankBy, totalGroup, render = tableRender }
 ) {
   // Calculate the tree data structure
   const tree = subtotal({ data, groups, metrics, sort, impact, rankBy: rankBy, totalGroup });
@@ -70,7 +70,7 @@ export function insightTree(
     }
   else
     console.error(
-      `insightTree: render() generated ${nodes.length} nodes with [data-insight-level]. Expected ${tree.length}`,
+      `insightTree: render() generated ${nodes.length} nodes with [data-insight-level]. Expected ${tree.length}`
     );
   // Bind methods
   insightTree.show = show.bind(el, insightTree);
@@ -271,7 +271,7 @@ export const tableRender = (el, { tree, metrics }) => {
           ${metrics.map((metric) => /* html */ `<td class="text-end">${num.format(rest[metric])}</td>`).join("")}
             <td class="text-end">${pc.format(rest[SURPRISE])}</td>
             <td class="text-end">${pc.format(rest[IMPACT])}</td>
-        </tr>`,
+        </tr>`
         )
         .join("")}
     </tbody>

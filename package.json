@@ -7,12 +7,11 @@
   "main": "dist/insighttree.min.js",
   "scripts": {
     "docs": "documentation build insighttree.js --markdown-toc false -f md | prettier --parser markdown > docs/api.md",
-    "lint": "prettier --write '**/*.{js,mjs,ts,md,json}' && eslint",
     "watch": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist --watch",
     "build-browser": "esbuild insighttree.js insighttree.css --format=iife --global-name=gramex --bundle --sourcemap --minify --outdir=dist",
     "build-esm": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist",
     "build": "npm run build-browser && npm run build-esm && npm run docs",
-    "prepublishOnly": "npm run lint && npm run build",
+    "prepublishOnly": "npm run build",
     "pretest": "npm run build",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
@@ -22,7 +21,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://code.gramener.com/cto/gramex-insighttree"
+    "url": "git@github.com:gramener/gramex-insighttree"
   },
   "keywords": [
     "hierarchy",
@@ -39,39 +38,17 @@
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://code.gramener.com/cto/gramex-insighttree/-/issues"
+    "url": "https://github.com/gramener/gramex-insighttree/issues"
   },
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
-  "homepage": "https://gramener.com/gramex-insighttree/",
-  "prettier": {
-    "printWidth": 120
-  },
-  "eslintConfig": {
-    "root": true,
-    "parserOptions": {
-      "ecmaVersion": "latest",
-      "sourceType": "module"
-    },
-    "env": {
-      "browser": true,
-      "es2022": true,
-      "jest": true
-    },
-    "plugins": [
-      "html"
-    ],
-    "extends": "eslint:recommended"
-  },
+  "homepage": "https://gramener.github.io/gramex-insighttree/",
   "devDependencies": {
     "documentation": "^14.0.2",
     "esbuild": "^0.17.12",
-    "eslint": "^8.37.0",
-    "eslint-plugin-html": "^7.1.0",
     "jest": "^28.1.0",
-    "jest-environment-jsdom": "^29.5.0",
-    "prettier": "^3.2"
+    "jest-environment-jsdom": "^29.5.0"
   }
 }

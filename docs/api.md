@@ -138,7 +138,11 @@ Uses `data-insight-level` and `data-insight-rank` of the nodes to determine leve
 
 ```javascript
 // Assuming the DOM has nodes with `data-insight-level` and `data-insight-rank` attributes.
-update(treeData, { rank: 3, level: 2 }, { exactRank: false, showSiblings: true });
+update(
+  treeData,
+  { rank: 3, level: 2 },
+  { exactRank: false, showSiblings: true },
+);
 ```
 
 Returns **[insightTree][8]** Returns the insightTree object.

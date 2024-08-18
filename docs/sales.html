@@ -1,6 +1,38 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" />
-<link rel="stylesheet" href="../dist/insighttree.css" />
-<link rel="stylesheet" href="../app/app.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css">
+<link rel="stylesheet" href="../dist/insighttree.css">
+<link rel="stylesheet" href="sales.css">
+<style>
+.font-small-caps {
+  font-variant: small-caps;
+}
+
+.bg-gramener {
+  background-color: #20186f;
+}
+
+.icon-zoom {
+  max-height: 400px;
+}
+
+footer {
+  min-height: 400px;
+}
+
+/* Make Bootstrap 5.3 .form-range background darker */
+:root {
+  --bs-tertiary-bg: #cce5ff;
+  --bs-tertiary-bg-rgb: rgb(204, 229, 255);
+}
+
+.insight-tree td {
+  white-space: nowrap;
+}
+
+.insight-current td {
+  background-color: inherit !important;
+}
+
+</style>
 
 <input class="form-range sales-slider" type="range" min="1" max="15" value="5" />
 <div class="sales-tree"></div>
