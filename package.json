@@ -6,10 +6,10 @@
   "module": "dist/insighttree.js",
   "main": "dist/insighttree.min.js",
   "scripts": {
-    "docs": "documentation build insighttree.js --markdown-toc false -f md | prettier --parser markdown > docs/api.md",
-    "watch": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist --watch",
-    "build-browser": "esbuild insighttree.js insighttree.css --format=iife --global-name=gramex --bundle --sourcemap --minify --outdir=dist",
-    "build-esm": "esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist",
+    "docs": "npx -y documentation build insighttree.js --markdown-toc false -f md | npx -y prettier --parser markdown > docs/api.md",
+    "watch": "npx -y esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist --watch",
+    "build-browser": "npx -y esbuild insighttree.js insighttree.css --format=iife --global-name=gramex --bundle --sourcemap --minify --outdir=dist",
+    "build-esm": "npx -y esbuild insighttree.js insighttree.css --format=esm --bundle --minify --allow-overwrite --sourcemap --outdir=dist",
     "build": "npm run build-browser && npm run build-esm && npm run docs",
     "prepublishOnly": "npm run build",
     "pretest": "npm run build",
@@ -46,10 +46,7 @@
   },
   "homepage": "https://gramener.github.io/gramex-insighttree/",
   "devDependencies": {
-    "documentation": "^14.0.2",
-    "esbuild": "^0.17.12",
     "jest": "^28.1.0",
-    "jest-environment-jsdom": "^29.5.0",
-    "prettier": "3.3"
+    "jest-environment-jsdom": "^29.5.0"
   }
 }
