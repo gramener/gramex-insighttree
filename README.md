@@ -19,47 +19,49 @@ Here's a sample output:
 
 ## Installation
 
-Install via `npm`:
+Add this to your script (and include the CSS):
+
+```html
+<link rel="stylesheet" href="./node_modules/@gramex/insighttree/dist/insighttree.css" />
+<script type="module">
+  import { insightTree } from "@gramex/insighttree";
+  // ...
+  // insightTree(...)
+  // ...
+
+  // Example only; see Usage for details
+</script>
+```
+
+To use via CDN, add this to your HTML file:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gramex/insighttree@3/dist/insighttree.css" />
+<script type="importmap">
+  {
+    "imports": {
+      "@gramex/insighttree": "https://cdn.jsdelivr.net/npm/@gramex/insighttree@3/dist/insighttree.js"
+    }
+  }
+</script>
+```
+
+To use locally, install via `npm`:
 
 ```bash
 npm install @gramex/insighttree@3
 ```
 
-Use locally as an ES module:
+... and add this to your HTML file:
 
 ```html
 <link rel="stylesheet" href="./node_modules/@gramex/insighttree/dist/insighttree.css" />
-<script type="module">
-  import { insightTree } from "./node_modules/@gramex/insighttree/dist/insighttree.js";
-</script>
-```
-
-Use locally as a script:
-
-```html
-<link rel="stylesheet" href="./node_modules/@gramex/insighttree/dist/insighttree.css" />
-<script src="./node_modules/@gramex/insighttree/dist/insighttree.min.js"></script>
-<script>
-  gramex.insightTree(...)
-</script>
-```
-
-Use via CDN as an ES Module:
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gramex/insighttree@3/dist/insighttree.css" />
-<script type="module">
-  import { insightTree } from "https://cdn.jsdelivr.net/npm/@gramex/insighttree@3/dist/insighttree.js";
-</script>
-```
-
-Use via CDN as a script:
-
-```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@gramex/insighttree@3/dist/insighttree.css" />
-<script src="https://cdn.jsdelivr.net/npm/@gramex/insighttree@3/dist/insighttree.min.js"></script>
-<script>
-  gramex.insightTree(...)
+<script type="importmap">
+  {
+    "imports": {
+      "@gramex/insighttree": "./node_modules/@gramex/insighttree/dist/insighttree.js"
+    }
+  }
 </script>
 ```
 
